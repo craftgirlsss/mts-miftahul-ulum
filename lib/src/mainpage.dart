@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'views/qrpage/ar_scanner.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -76,7 +79,9 @@ class _MainPageState extends State<MainPage> {
         child: InkWell(
           customBorder: const CircleBorder(),
           splashColor: Colors.white10.withOpacity(0.1),
-          onTap: () {},
+          onTap: () {
+            Get.to(() => const QRCodePage());
+          },
           child: Container(
             width: 70,
             height: 70,
