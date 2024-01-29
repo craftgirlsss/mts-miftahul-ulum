@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:socio_univ/src/views/login/login.dart';
 
 class QRCodePage extends StatefulWidget {
   const QRCodePage({super.key});
@@ -30,29 +32,56 @@ class _QRCodePageState extends State<QRCodePage> {
 
   @override
   Widget build(BuildContext context) {
+    var scanArea = (MediaQuery.of(context).size.width < 400 ||
+            MediaQuery.of(context).size.height < 400)
+        ? 150.0
+        : 300.0;
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
           Expanded(
             flex: 5,
-            child: QRView(key: qrKey, onQRViewCreated: _onQRViewCreated),
+            child: QRView(
+              key: qrKey, 
+              onQRViewCreated: _onQRViewCreated,
+              overlay: QrScannerOverlayShape(
+              borderColor: Colors.red,
+              borderRadius: 10,
+              borderLength: 30,
+              borderWidth: 10,
+              cutOutSize: scanArea),
+              onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
+              ),
           ),
-          Expanded(
-              flex: 1,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
               child: Center(
                   child: result != null
                       ? Text(
-                          'Barcode Type: ${describeIdentity(result!.format)} Data : ${result!.code}')
-                      : const Text('Scan a code')))
+                          'Barcode Type: ${describeIdentity(result!.format)} Data : ${result!.code}', style: TextStyle(color: Colors.white),)
+                      : const Text('Scan a code', style: TextStyle(color: Colors.white),)))
         ],
       ),
-    );
+    ); 
   }
+
+  void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
+    // log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
+    if (!p) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('no Permission')),
+      );
+    }
+  }
+
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       setState(() {
+        Get.to(() => const ViewLogin());
         result = scanData;
       });
     });
