@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:socio_univ/src/views/login/login.dart';
+
+import 'confirmation_absence.dart';
 
 class QRCodePage extends StatefulWidget {
   const QRCodePage({super.key});
@@ -37,34 +37,43 @@ class _QRCodePageState extends State<QRCodePage> {
         ? 150.0
         : 300.0;
     return Scaffold(
-      body: Stack(
-        children: [
-          Expanded(
-            flex: 5,
-            child: QRView(
-              key: qrKey, 
-              onQRViewCreated: _onQRViewCreated,
-              overlay: QrScannerOverlayShape(
-              borderColor: Colors.red,
-              borderRadius: 10,
-              borderLength: 30,
-              borderWidth: 10,
-              cutOutSize: scanArea),
-              onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
-              ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-              child: Center(
-                  child: result != null
-                      ? Text(
-                          'Barcode Type: ${describeIdentity(result!.format)} Data : ${result!.code}', style: TextStyle(color: Colors.white),)
-                      : const Text('Scan a code', style: TextStyle(color: Colors.white),)))
-        ],
+      body:
+          //  Stack(
+          //   children: [
+          //     Expanded(
+          //       flex: 5,
+          //       child:
+          QRView(
+        key: qrKey,
+        onQRViewCreated: _onQRViewCreated,
+        overlay: QrScannerOverlayShape(
+            borderColor: Colors.red,
+            borderRadius: 10,
+            borderLength: 30,
+            borderWidth: 10,
+            cutOutSize: scanArea),
+        onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
       ),
-    ); 
+    );
+    // Positioned(
+    //     bottom: 0,
+    //     left: 0,
+    //     right: 0,
+    //     child: Center(
+    //         child: result != null
+    //             ? Text(
+    //                 'Barcode Type: ${describeIdentity(result!.format)} Data : ${result!.code}',
+    //                 textAlign: TextAlign.center,
+    //                 style: const TextStyle(color: Colors.white),
+    //               )
+    //             : const Text(
+    //                 'Scan a code',
+    //                 textAlign: TextAlign.center,
+    //                 style: TextStyle(color: Colors.white),
+    //               )))
+    //     ],
+    //   ),
+    // );
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
@@ -76,12 +85,12 @@ class _QRCodePageState extends State<QRCodePage> {
     }
   }
 
-
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
+      debugPrint(scanData.code);
       setState(() {
-        Get.to(() => const ViewLogin());
+        Get.to(() => const ConfirmationPage());
         result = scanData;
       });
     });

@@ -1,9 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:socio_univ/src/components/buttons.dart';
+import 'package:socio_univ/src/components/loadings.dart';
 import 'package:socio_univ/src/components/styles.dart';
+import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/helpers/focus.dart';
+import 'package:socio_univ/src/helpers/permission.dart';
 import 'package:socio_univ/src/mainpage.dart';
+
+import 'lupa_password.dart';
 
 class ViewLogin extends StatefulWidget {
   const ViewLogin({super.key});
@@ -15,8 +22,16 @@ class ViewLogin extends StatefulWidget {
 class _ViewLoginState extends State<ViewLogin> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
+  AccountsController accountsController = Get.put(AccountsController());
   final _keyFormLogin = GlobalKey<FormState>();
-  var obsecure = false.obs;
+  var obsecure = true.obs;
+
+  @override
+  void initState() {
+    checkPermission(Permission.location, context);
+    checkPermission(Permission.photos, context);
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -39,6 +54,7 @@ class _ViewLoginState extends State<ViewLogin> {
       autofocus: false,
       style: kDefaultTextStyle(color: Colors.black87, fontSize: 15),
       decoration: InputDecoration(
+          prefixIcon: const Icon(CupertinoIcons.person, color: Colors.black54),
           filled: true,
           fillColor: Colors.white54,
           hintText: 'NIP',
@@ -57,6 +73,7 @@ class _ViewLoginState extends State<ViewLogin> {
         obscureText: obsecure.value,
         style: kDefaultTextStyle(color: Colors.black87, fontSize: 15),
         decoration: InputDecoration(
+          prefixIcon: const Icon(CupertinoIcons.padlock, color: Colors.black54),
           fillColor: Colors.white54,
           filled: true,
           hintStyle: kDefaultTextStyle(color: Colors.black87, fontSize: 15),
@@ -86,59 +103,132 @@ class _ViewLoginState extends State<ViewLogin> {
       ),
     );
 
-    return GestureDetector(
-      onTap: () => focusManager(),
-      child: Scaffold(
-          backgroundColor: Colors.green.shade600,
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Column(
-              children: [
-                Container(
-                    alignment: Alignment.center,
-                    height: MediaQuery.of(context).size.height,
-                    child: Form(
-                      key: _keyFormLogin,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            logo,
-                            const SizedBox(height: 30),
-                            emailField,
-                            const SizedBox(height: 10.0),
-                            passwordField,
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    // Get.to(() => const ForgotPassword());
-                                  },
-                                  child: Text(
-                                    'Lupa Kata Sandi?',
-                                    style:
-                                        kDefaultTextStyle(color: Colors.white),
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => focusManager(),
+          child: Scaffold(
+            backgroundColor: Colors.green.shade600,
+            // appBar: AppBar(
+            //   elevation: 0,
+            //   automaticallyImplyLeading: false,
+            //   backgroundColor: Colors.green.shade600,
+            //   title: Text(
+            //     "Masuk",
+            //     style: kDefaultTextStyleBold(color: Colors.white, fontSize: 23),
+            //   ),
+            // ),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Text(
+                      "Masuk",
+                      style: kDefaultTextStyleBold(
+                          color: Colors.white, fontSize: 23),
+                    ),
+                    const SizedBox(height: 70),
+                    Container(
+                      alignment: Alignment.center,
+                      height: MediaQuery.of(context).size.height,
+                      child: Form(
+                        key: _keyFormLogin,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              logo,
+                              const SizedBox(height: 10),
+                              Hero(
+                                tag: "sekolah",
+                                child: DefaultTextStyle(
+                                  style: kDefaultTextStyleBold(fontSize: 20),
+                                  child: const Text(
+                                    "Aplikasi Absensi Siswa\nMTs Miftahul Ulum\nSampang",
+                                    textAlign: TextAlign.center,
                                   ),
-                                )
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            kDefaultButtons(
-                                backgroundColor: Colors.blue.shade800,
-                                onPressed: () {
-                                  Get.to(() => const MainPage());
-                                },
-                                title: "Masuk"),
-                            const SizedBox(height: 20),
-                          ],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              // Text(
+                              //   "Masuk",
+                              //   style: kDefaultTextStyleBold(fontSize: 27),
+                              // ),
+                              const SizedBox(height: 10),
+                              emailField,
+                              const SizedBox(height: 10.0),
+                              passwordField,
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.to(() => const LupaPassword());
+                                    },
+                                    child: Text(
+                                      'Lupa Kata Sandi?',
+                                      style: kDefaultTextStyle(
+                                          color: Colors.white),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              Obx(
+                                () => kDefaultButtons(
+                                    backgroundColor: Colors.black87,
+                                    onPressed: accountsController
+                                                .isLoading.value ==
+                                            true
+                                        ? () {}
+                                        : () async {
+                                            if (await accountsController
+                                                    .loginGuru(
+                                                        nip: emailController
+                                                            .text,
+                                                        password: passController
+                                                            .text) ==
+                                                true) {
+                                              Future.delayed(
+                                                  const Duration(seconds: 2),
+                                                  () {
+                                                Get.to(() => const MainPage());
+                                              });
+                                            } else {
+                                              Get.defaultDialog(
+                                                  title: "Gagal",
+                                                  content: const Text(
+                                                      "Gagal menghubungkan ke server"),
+                                                  cancel: TextButton(
+                                                      onPressed: () {
+                                                        Get.back();
+                                                      },
+                                                      child: const Text("OK")));
+                                            }
+                                          },
+                                    title: accountsController.isLoading.value ==
+                                            true
+                                        ? "Loading"
+                                        : "Masuk"),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    )),
-              ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-          )),
+          ),
+        ),
+        Obx(() => accountsController.isLoading.value == true
+            ? floatingLoading()
+            : const SizedBox()),
+      ],
     );
   }
 }
