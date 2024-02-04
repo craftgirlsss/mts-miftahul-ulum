@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 
 class LocationController extends GetxController {
   var isLoading = false.obs;
-  RxDouble latitude = 0.0.obs;
-  RxDouble longitude = 0.0.obs;
+  RxString latitude = ''.obs;
+  RxString longitude = ''.obs;
   var currentAddress = ''.obs;
   Position? _currentPosition;
 
@@ -42,7 +42,7 @@ class LocationController extends GetxController {
       //       "${place.locality}, ${place.administrativeArea} ${place.postalCode}, ${place.country}";
       // });
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 }

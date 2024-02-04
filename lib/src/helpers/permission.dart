@@ -3,14 +3,19 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-Future<void> checkPermission(Permission permission, context) async {
+Future<void> checkPermission(
+    Permission permission, String permissionName, context) async {
   final status = await permission.request();
   if (status.isGranted) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Permission is granted')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Izin $permissionName diizinkan'),
+      backgroundColor: Colors.green,
+    ));
   } else if (status.isDenied) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Permission is denied')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Izin $permissionName ditolak'),
+      backgroundColor: Colors.red,
+    ));
   } else if (status.isPermanentlyDenied) {
     ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Permission is permanently denied')));

@@ -28,8 +28,8 @@ class _ViewLoginState extends State<ViewLogin> {
 
   @override
   void initState() {
-    checkPermission(Permission.location, context);
-    checkPermission(Permission.photos, context);
+    checkPermission(Permission.location, "lokasi", context);
+    checkPermission(Permission.camera, "kamera", context);
     super.initState();
   }
 
