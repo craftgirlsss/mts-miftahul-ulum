@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:socio_univ/src/components/alert.dart';
 import 'package:socio_univ/src/components/loadings.dart';
 import 'package:socio_univ/src/components/styles.dart';
 import 'package:socio_univ/src/controllers/account_controller.dart';
@@ -22,81 +23,94 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
   TextEditingController nisController = TextEditingController();
   TextEditingController keteranganController = TextEditingController();
   TextEditingController jenisKelaminController = TextEditingController();
-  void popUpAddData() {
-    Get.defaultDialog(
-        content: Column(
-          children: [
-            Text(
-              "Tambah data secara manual untuk siswa tidak hadir, izin, atau terlambat. \nAturan keterangan (Masuk = 1, Izin = 2, Sakit = 3, Tidak Diketahui = 4)",
-              style: kDefaultTextStyle(color: Colors.white),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            CupertinoTextField(
-              controller: namaController,
-              placeholderStyle: const TextStyle(color: Colors.black38),
-              placeholder: "Nama",
-              suffix: const Padding(
-                padding: EdgeInsets.only(right: 8),
-                child: Icon(CupertinoIcons.person, color: Colors.black26),
-              ),
-            ),
-            const SizedBox(height: 5),
-            CupertinoTextField(
-              controller: nisController,
-              placeholderStyle: const TextStyle(color: Colors.black38),
-              placeholder: "NIS",
-              suffix: const Padding(
-                padding: EdgeInsets.only(right: 8),
-                child: Icon(CupertinoIcons.person_crop_square,
-                    color: Colors.black26),
-              ),
-            ),
-            const SizedBox(height: 5),
-            CupertinoTextField(
-              controller: keteranganController,
-              keyboardType: const TextInputType.numberWithOptions(),
-              placeholderStyle: const TextStyle(color: Colors.black38),
-              placeholder: "Keterangan",
-              suffix: const Padding(
-                padding: EdgeInsets.only(right: 8),
-                child: Icon(CupertinoIcons.news, color: Colors.black26),
-              ),
-            ),
-            const SizedBox(height: 5),
-            CupertinoTextField(
-              controller: jenisKelaminController,
-              placeholderStyle: const TextStyle(color: Colors.black38),
-              placeholder: "Jenis Kelamin",
-              suffix: const Padding(
-                padding: EdgeInsets.only(right: 8),
-                child:
-                    Icon(CupertinoIcons.personalhotspot, color: Colors.black26),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.grey.shade900,
-        titleStyle:
-            kDefaultTextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        title: "Tambah Manual",
-        barrierDismissible: true,
-        buttonColor: Colors.green,
-        textConfirm: "Tambah",
-        contentPadding: const EdgeInsets.all(10),
-        onConfirm: () async {
-          siswaController.personsV2.add({
-            'siswa_nama': namaController.text,
-            'siswa_nis': nisController.text,
-            'guru_id': accountsController.guruModels.value?.data.guruId ?? '0',
-            'keterangan': keteranganController.text,
-            'gender': jenisKelaminController.text,
-            'longitude': locationController.longitude.value,
-            'latitude': locationController.latitude.value,
-            'location': locationController.currentAddress.value
-          });
-        });
-  }
+  // void popUpAddData() {
+  //   Get.defaultDialog(
+  //       content: Column(
+  //         children: [
+  //           Text(
+  //             "Tambah data secara manual untuk siswa tidak hadir, izin, atau terlambat. \nAturan keterangan (Masuk = 1, Izin = 2, Sakit = 3, Tidak Diketahui = 4)",
+  //             style: kDefaultTextStyle(color: Colors.white),
+  //             textAlign: TextAlign.center,
+  //           ),
+  //           const SizedBox(height: 10),
+  //           CupertinoTextField(
+  //             controller: namaController,
+  //             placeholderStyle: const TextStyle(color: Colors.black38),
+  //             placeholder: "Nama",
+  //             suffix: const Padding(
+  //               padding: EdgeInsets.only(right: 8),
+  //               child: Icon(CupertinoIcons.person, color: Colors.black26),
+  //             ),
+  //           ),
+  //           const SizedBox(height: 5),
+  //           CupertinoTextField(
+  //             controller: nisController,
+  //             keyboardType: const TextInputType.numberWithOptions(),
+  //             placeholderStyle: const TextStyle(color: Colors.black38),
+  //             placeholder: "NIS",
+  //             suffix: const Padding(
+  //               padding: EdgeInsets.only(right: 8),
+  //               child: Icon(CupertinoIcons.person_crop_square,
+  //                   color: Colors.black26),
+  //             ),
+  //           ),
+  //           const SizedBox(height: 5),
+  //           CupertinoTextField(
+  //             controller: keteranganController,
+  //             keyboardType: const TextInputType.numberWithOptions(),
+  //             placeholderStyle: const TextStyle(color: Colors.black38),
+  //             placeholder: "Keterangan",
+  //             suffix: const Padding(
+  //               padding: EdgeInsets.only(right: 8),
+  //               child: Icon(CupertinoIcons.news, color: Colors.black26),
+  //             ),
+  //           ),
+  //           const SizedBox(height: 5),
+  //           CupertinoTextField(
+  //             controller: jenisKelaminController,
+  //             placeholderStyle: const TextStyle(color: Colors.black38),
+  //             placeholder: "Jenis Kelamin",
+  //             suffix: const Padding(
+  //               padding: EdgeInsets.only(right: 8),
+  //               child:
+  //                   Icon(CupertinoIcons.personalhotspot, color: Colors.black26),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //       backgroundColor: Colors.grey.shade900,
+  //       titleStyle:
+  //           kDefaultTextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  //       title: "Tambah Manual",
+  //       barrierDismissible: true,
+  //       buttonColor: Colors.green,
+  //       textConfirm: "Tambah",
+  //       contentPadding: const EdgeInsets.all(10),
+  //       onConfirm: () async {
+  //         siswaController.addingData({
+  //           'siswa_nama': namaController.text,
+  //           'siswa_nis': nisController.text,
+  //           'guru_id': accountsController.guruModels.value?.data.guruId ?? '0',
+  //           'keterangan': keteranganController.text,
+  //           'gender': jenisKelaminController.text,
+  //           'longitude': locationController.longitude.value,
+  //           'latitude': locationController.latitude.value,
+  //           'location': locationController.currentAddress.value
+  //         });
+  //         Get.back();
+  //         // siswaController.personsV2.add({
+  //         //   'siswa_nama': namaController.text,
+  //         //   'siswa_nis': nisController.text,
+  //         //   'guru_id': accountsController.guruModels.value?.data.guruId ?? '0',
+  //         //   'keterangan': keteranganController.text,
+  //         //   'gender': jenisKelaminController.text,
+  //         //   'longitude': locationController.longitude.value,
+  //         //   'latitude': locationController.latitude.value,
+  //         //   'location': locationController.currentAddress.value
+  //         // });
+  //       });
+  //   // Get.back();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -117,8 +131,14 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
                 () => siswaController.isLoading.value == true
                     ? Container()
                     : IconButton(
+                        tooltip: "Hapus semua data",
                         onPressed: () {
-                          siswaController.clearingDataTemp();
+                          showAlertDialog(context,
+                              description:
+                                  "Apakah anda yakin menghapus semua data?",
+                              onOk: () {
+                            siswaController.clearingDataTemp();
+                          }, title: "Hapus");
                         },
                         icon: const Icon(
                           CupertinoIcons.trash,
@@ -126,19 +146,19 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
                         ),
                       ),
               ),
-              Obx(
-                () => siswaController.isLoading.value == true
-                    ? Container()
-                    : IconButton(
-                        onPressed: () {
-                          popUpAddData();
-                        },
-                        icon: const Icon(
-                          CupertinoIcons.add,
-                          color: Colors.white60,
-                        ),
-                      ),
-              )
+              // Obx(
+              //   () => siswaController.isLoading.value == true
+              //       ? Container()
+              //       : IconButton(
+              //           onPressed: () {
+              //             popUpAddData();
+              //           },
+              //           icon: const Icon(
+              //             CupertinoIcons.add,
+              //             color: Colors.white60,
+              //           ),
+              //         ),
+              // )
             ],
           ),
           body: Obx(

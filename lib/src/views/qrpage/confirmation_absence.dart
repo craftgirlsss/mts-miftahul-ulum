@@ -308,7 +308,8 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                               if (await siswaController.finishAbsensi() ==
                                   true) {
                                 Future.delayed(const Duration(seconds: 2), () {
-                                  Get.back();
+                                  siswaController.personsV2.clear();
+                                  Navigator.pop(context);
                                 });
                                 // Get.defaultDialog(
                                 //     backgroundColor: Colors.green.shade400,

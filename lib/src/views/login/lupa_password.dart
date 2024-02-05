@@ -97,7 +97,7 @@ class _LupaPasswordState extends State<LupaPassword> {
                                   child: DefaultTextStyle(
                                     style: kDefaultTextStyleBold(fontSize: 20),
                                     child: const Text(
-                                      "Aplikasi Absensi Siswa\nMTs Miftahul Ulum\nSampang",
+                                      "Aplikasi Absensi Siswa\nMTs Miftahul Ulum\nPasean Pamekasan",
                                       textAlign: TextAlign.center,
                                     ),
                                   ),

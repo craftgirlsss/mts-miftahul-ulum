@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socio_univ/src/controllers/siswa_controller.dart';
 import 'package:socio_univ/src/models/guru_models.dart';
 
 class AccountsController extends GetxController {
   var isLoading = false.obs;
   var guruModels = Rxn<GuruModels>();
+  SiswaController siswaController = Get.put(SiswaController());
+  var guruID = ''.obs;
 
   Future<bool> loginGuru({String? nip, String? password}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -32,6 +35,8 @@ class AccountsController extends GetxController {
           prefs.setBool('login', true);
           guruModels.value = GuruModels.fromJson(jsonDecode(response.body));
           prefs.setString('nip', jsonDecode(response.body)['data']['guru_nip']);
+          siswaController.daftarKelasHariIni(
+              guruID: jsonDecode(response.body)['data']['guru_id']);
           Get.snackbar("Berhasil",
               "Berhasil masuk, Anda akan diarahkan ke halaman homepage",
               backgroundColor: Colors.white, colorText: Colors.black87);
@@ -75,7 +80,11 @@ class AccountsController extends GetxController {
       if (response.statusCode == 200) {
         isLoading(false);
         if (jsonDecode(response.body)['success'] == true) {
+          // prefs.setString(
+          //     'guru_id', jsonDecode(response.body)['data']['guru_id']);
           guruModels.value = GuruModels.fromJson(jsonDecode(response.body));
+          siswaController.daftarKelasHariIni(
+              guruID: jsonDecode(response.body)['data']['guru_id']);
           return true;
         } else {
           Get.snackbar("Gagal",

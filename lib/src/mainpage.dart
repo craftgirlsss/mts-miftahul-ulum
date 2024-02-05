@@ -9,8 +9,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/controllers/location_controller.dart';
 import 'package:socio_univ/src/controllers/siswa_controller.dart';
+import 'package:socio_univ/src/views/home/daftar_kelas.dart';
 
-import 'views/home/absensi.dart';
 import 'views/profile/profile.dart';
 import 'views/qrpage/confirmation_absence.dart';
 
@@ -148,7 +148,7 @@ class _MainPageState extends State<MainPage> {
                 CupertinoIcons.person_2_square_stack,
                 color: Colors.white54,
               ),
-              label: 'Absensi',
+              label: 'Kelas',
             ),
             NavigationDestination(
               selectedIcon: Icon(CupertinoIcons.person_alt_circle_fill),
@@ -162,7 +162,7 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
       body: <Widget>[
-        const AbsensiPage(),
+        const DaftarKelas(),
         const ProfilePage(),
       ][currentPageIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

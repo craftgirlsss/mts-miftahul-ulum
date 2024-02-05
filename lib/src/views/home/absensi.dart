@@ -2,16 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:socio_univ/src/components/styles.dart';
 import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/controllers/location_controller.dart';
 import 'package:socio_univ/src/controllers/siswa_controller.dart';
 
 import 'detail_siswa_hadir.dart';
-import 'detail_siswa_tidak_hadir.dart';
 
 class AbsensiPage extends StatefulWidget {
-  const AbsensiPage({super.key});
+  final String? kelas;
+  final int? index;
+  const AbsensiPage({super.key, this.kelas, this.index});
 
   @override
   State<AbsensiPage> createState() => _AbsensiPageState();
@@ -128,242 +130,132 @@ class _AbsensiPageState extends State<AbsensiPage>
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      animationDuration: const Duration(milliseconds: 700),
-      length: 3,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          actions: [
-            CupertinoButton(
-                onPressed: () {
-                  popUpAddData();
-                },
-                child: const Icon(CupertinoIcons.add))
-          ],
-          title: Text(
-            "Daftar Hadir",
-            style: kDefaultTextStyleBold(fontSize: 19),
-          ),
-          bottom: const TabBar(
-              enableFeedback: true,
-              tabAlignment: TabAlignment.fill,
-              indicatorSize: TabBarIndicatorSize.tab,
-              dividerColor: Colors.white24,
-              tabs: [
-                Tab(icon: Text("Hadir")),
-                Tab(icon: Text("Telat")),
-                Tab(icon: Text("Tidak Hadir")),
-              ]),
+    // String? statusAbsen;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Absensi Kelas ${widget.kelas}",
+          style: kDefaultTextStyle(fontSize: 16),
         ),
-        body: Column(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.only(left: 15, right: 15),
-              height: 50,
-              color: Colors.white12,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Kelas : 9A",
-                    style: kDefaultTextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    "Jumlah Siswa : 19/28",
-                    style: kDefaultTextStyle(color: Colors.white),
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  // daftar siswa hadir
-                  ListView.separated(
-                      itemBuilder: (c, i) => (i != itemData.length)
-                          ? ListTile(
-                              // enableFeedback: false,
-                              onTap: () {
-                                Get.to(() => DetailSiswa(
-                                      namaSiswa: "Ruthalia Anwira Maya",
-                                      jamHadir: DateFormat('dd MMM yyyy -')
-                                          .add_jm()
-                                          .format(DateTime.now()),
-                                      jenisKelamin: "Perempuan",
-                                      kelas: "9C",
-                                    ));
-                              },
-                              leading: Container(
-                                width: 50,
-                                height: 50,
-                                decoration: const BoxDecoration(
-                                    color: Colors.purple,
-                                    shape: BoxShape.circle),
-                                child: Center(
-                                  child: Text(
-                                    (i + 1).toString(),
-                                    style: kDefaultTextStyle(),
-                                  ),
-                                ),
-                              ),
-                              title: Text(
-                                "Student ${i + 1}",
-                                style: kDefaultTextStyleBold(fontSize: 17),
-                              ),
-                              subtitle: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    CupertinoIcons.time_solid,
-                                    size: 17,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(DateFormat('dd MMM yyyy -')
-                                      .add_jm()
-                                      .format(DateTime.now())),
-                                ],
-                              ),
-                              trailing: const Icon(
-                                Icons.keyboard_arrow_right_rounded,
-                                size: 24,
-                              ),
-                            )
-                          : Padding(
-                              padding: const EdgeInsets.only(bottom: 50),
-                              child: Center(
-                                child: Text(
-                                  "Jumlah siswa hadir : $i/28",
-                                  style: kDefaultTextStyle(
-                                      color: Colors.white, fontSize: 14),
-                                ),
-                              ),
+        actions: [
+          IconButton(
+              tooltip: "Tambah Data",
+              onPressed: () {
+                popUpAddData();
+              },
+              icon: const Icon(
+                CupertinoIcons.add,
+                color: CupertinoColors.activeBlue,
+              ))
+        ],
+      ),
+      backgroundColor: Colors.black,
+      body: Obx(
+        () => siswaController.daftarKelasModels.value != null
+            ? ListView.separated(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                itemBuilder: (c, i) => (i !=
+                        siswaController.daftarKelasModels.value!
+                            .data[widget.index!].siswa!.length)
+                    ? ListTile(
+                        dense: false,
+                        onTap: () {
+                          Get.to(() => DetailSiswa(
+                                namaSiswa: "Ruthalia Anwira Maya",
+                                jamHadir: DateFormat('dd MMM yyyy -')
+                                    .add_jm()
+                                    .format(DateTime.parse(siswaController
+                                        .daftarKelasModels
+                                        .value!
+                                        .data[widget.index!]
+                                        .siswa![i]
+                                        .absenTimestamp!)),
+                                jenisKelamin: "Perempuan",
+                                kelas: "9C",
+                              ));
+                        },
+                        leading: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: const BoxDecoration(
+                              color: Colors.purple, shape: BoxShape.circle),
+                          child: Center(
+                            child: Text(
+                              (i + 1).toString(),
+                              style: kDefaultTextStyle(),
                             ),
-                      separatorBuilder: (c, i) => const SizedBox(height: 10),
-                      itemCount: itemData.length + 1),
-
-                  // Daftar siswa telat
-                  ListView.separated(
-                      itemBuilder: (c, i) => (i != itemData.length)
-                          ? ListTile(
-                              // enableFeedback: false,
-                              onTap: () {
-                                // Get.to(() => const ConfirmationPage());
-                              },
-                              leading: Container(
-                                width: 50,
-                                height: 50,
-                                decoration: const BoxDecoration(
-                                    color: Colors.purple,
-                                    shape: BoxShape.circle),
-                                child: Center(
-                                  child: Text(
-                                    (i + 1).toString(),
-                                    style: kDefaultTextStyle(),
-                                  ),
-                                ),
-                              ),
-                              title: Text(
-                                "Student ${i + 1}",
-                                style: kDefaultTextStyleBold(fontSize: 17),
-                              ),
-                              subtitle: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    CupertinoIcons.time_solid,
-                                    size: 17,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(DateFormat('dd MMM yyyy |')
-                                      .add_jm()
-                                      .format(DateTime.now())),
-                                ],
-                              ),
-                              trailing: const Icon(
-                                Icons.keyboard_arrow_right_rounded,
-                                size: 24,
-                              ),
-                            )
-                          : Padding(
-                              padding: const EdgeInsets.only(bottom: 50),
-                              child: Center(
-                                child: Text(
-                                  "Jumlah siswa telat : $i/28",
-                                  style: kDefaultTextStyle(
-                                      color: Colors.white, fontSize: 14),
-                                ),
-                              ),
+                          ),
+                        ),
+                        title: Text(
+                          siswaController.daftarKelasModels.value
+                                  ?.data[widget.index!].siswa![i].siswaNama ??
+                              'Tidak ada nama',
+                          style: kDefaultTextStyleBold(fontSize: 17),
+                        ),
+                        subtitle: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              CupertinoIcons.time_solid,
+                              size: 17,
                             ),
-                      separatorBuilder: (c, i) => const SizedBox(height: 10),
-                      itemCount: itemData.length + 1),
-
-                  // Daftar siswa tidak hadir
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 40),
-                    child: ListView.separated(
-                        itemBuilder: (c, i) => (i != itemData.length)
-                            ? ListTile(
-                                // enableFeedback: false,
-                                onTap: () {
-                                  Get.to(() => const DetailSiswaTidakHadir(
-                                        namaSiswa: "Arum Purwita Sari",
-                                        alasan: "Sakit",
-                                        jenisKelamin: "Perempuan",
-                                        kelas: "9C",
-                                      ));
-                                },
-                                leading: Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: const BoxDecoration(
-                                      color: Colors.purple,
-                                      shape: BoxShape.circle),
-                                  child: Center(
-                                    child: Text(
-                                      "${i + 1}",
-                                      style: kDefaultTextStyle(),
-                                    ),
-                                  ),
-                                ),
-                                title: Text(
-                                  "Student ${i + 1}",
-                                  style: kDefaultTextStyleBold(fontSize: 17),
-                                ),
-                                subtitle: const Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text("Alasan : "),
-                                    Text(
-                                      "Sakit",
-                                      style: TextStyle(color: Colors.red),
-                                    )
-                                  ],
-                                ),
-                                trailing: const Icon(
-                                  Icons.keyboard_arrow_right_rounded,
-                                  size: 24,
-                                ),
-                              )
-                            : Center(
-                                child: Text(
-                                  "Jumlah siswa tidak hadir : $i/28",
-                                  style: kDefaultTextStyle(
-                                      color: Colors.white, fontSize: 14),
-                                ),
-                              ),
-                        separatorBuilder: (c, i) => const SizedBox(height: 7),
-                        itemCount: itemData.length + 1),
-                  ),
-                ],
+                            const SizedBox(width: 6),
+                            Text(
+                                "${DateFormat().add_jm().format(DateTime.parse(siswaController.daftarKelasModels.value!.data[widget.index!].siswa![i].absenDatetime!))} | Status : ${siswaController.daftarKelasModels.value?.data[widget.index!].siswa![i].absenStatus}"),
+                          ],
+                        ),
+                        trailing: SizedBox(
+                          height: double.infinity,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white38, shape: BoxShape.circle),
+                            child: const Icon(
+                              Icons.keyboard_arrow_right_rounded,
+                              color: Colors.white54,
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Center(
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 20, right: 20),
+                            width: MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white)),
+                            child: Text(
+                              "Pengertian Status\nHadir = 1\nIzin = 2\nSakit = 3\nTidak Diketahui = 4",
+                              textAlign: TextAlign.center,
+                              style: kDefaultTextStyle(
+                                  color: Colors.white, fontSize: 14),
+                            ),
+                          ),
+                        ),
+                      ),
+                separatorBuilder: (c, i) => const SizedBox(height: 0),
+                itemCount: siswaController.daftarKelasModels.value!
+                        .data[widget.index!].siswa!.length +
+                    1)
+            : Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height / 1.5,
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Lottie.asset('assets/images/no_data.json', height: 110),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Tidak ada data absen hari ini",
+                      style: kDefaultTextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
