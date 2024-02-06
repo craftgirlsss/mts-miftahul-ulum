@@ -10,9 +10,14 @@ import 'package:socio_univ/src/models/siswa_models.dart';
 class SiswaController extends GetxController {
   var isLoading = false.obs;
   var isLoadingDaftarKelas = false.obs;
+  // AccountsController accountsController = Get.put(AccountsController());
   var siswaModels = Rxn<SiswaModels>();
   var daftarKelasModels = Rxn<DaftarKelasModels>();
   List<Map<String, dynamic>> personsV2 = [];
+  var hadir = 0.obs;
+  var izin = 0.obs;
+  var sakit = 0.obs;
+  var tidakDiketahui = 0.obs;
   // RxList personsV2 = [].obs;
 
   daftarKelasHariIni({String? guruID}) async {
@@ -26,10 +31,38 @@ class SiswaController extends GetxController {
           }).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         isLoadingDaftarKelas(false);
-        print(jsonDecode(response.body));
         if (jsonDecode(response.body)['success'] == true) {
           daftarKelasModels.value =
               DaftarKelasModels.fromJson(jsonDecode(response.body));
+
+          // for (int i = 0; i < daftarKelasModels.value!.data.length; i++) {
+          //   for (int j = i;
+          //       j < daftarKelasModels.value!.data[i].siswa!.length;
+          //       j++) {
+          //     if (daftarKelasModels.value!.data[i].siswa?[j].absenStatus ==
+          //         '1') {
+          //       hadir.value + 1;
+          //       print(hadir.value);
+          //     } else if (daftarKelasModels
+          //             .value!.data[i].siswa?[j].absenStatus ==
+          //         '2') {
+          //       izin.value + 1;
+          //       print(izin.value);
+          //     } else if (daftarKelasModels
+          //             .value!.data[i].siswa?[j].absenStatus ==
+          //         '3') {
+          //       sakit.value + 1;
+          //       print(sakit.value);
+          //     } else if (daftarKelasModels
+          //             .value!.data[i].siswa?[j].absenStatus ==
+          //         '4') {
+          //       tidakDiketahui.value + 1;
+          //       print(tidakDiketahui.value);
+          //     } else {
+          //       print("tidak tahu");
+          //     }
+          //   }
+          // }
           // return true;
         } else {
           Get.snackbar("Gagal",
@@ -113,15 +146,21 @@ class SiswaController extends GetxController {
 
       if (response.statusCode == 200) {
         isLoading(false);
-        if (jsonDecode(response.body)['success'] == true) {
+        if (jsonDecode(response.body)['message'] ==
+            "1 berhasil absen dan 0 gagal absen.") {
           Get.snackbar("Berhasil", "Berhasil mengirim data absensi",
               backgroundColor: Colors.white, colorText: Colors.black87);
+          // daftarKelasHariIni(
+          //     guruID: accountsController.guruModels.value?.data.guruId);
           return true;
-        } else {
+        } else if (jsonDecode(response.body)['message'] ==
+            "0 berhasil absen dan 1 gagal") {
           Get.snackbar("Gagal",
               "Gagl menghubungkan ke server karna kode ${jsonDecode(response.body)['message']}",
               backgroundColor: Colors.red, colorText: Colors.white);
           isLoading(false);
+          return false;
+        } else {
           return false;
         }
       } else {

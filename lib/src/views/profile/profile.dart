@@ -9,6 +9,7 @@ import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/controllers/location_controller.dart';
 
 import '../login/login.dart';
+import 'change_password.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -221,7 +222,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 fontSize: 15, color: Colors.white),
                           ),
                           trailing: const CupertinoListTileChevron(),
-                          onTap: () {},
+                          onTap: () {
+                            Get.to(() => const GantiPassword());
+                          },
                         ),
                         CupertinoListTile.notched(
                           backgroundColor: Colors.black87,
