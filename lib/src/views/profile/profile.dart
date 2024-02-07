@@ -70,42 +70,16 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ),
+                    Text(
+                      "Email ${accountsController.guruModels.value?.data.guruEmail}",
+                      style: kDefaultTextStyle(
+                          color: Colors.white54, fontSize: 12),
+                    ),
                     const SizedBox(height: 40),
                     CupertinoFormSection.insetGrouped(
                       backgroundColor: const Color.fromARGB(0, 255, 255, 255),
                       margin: const EdgeInsets.all(0),
                       children: [
-                        CupertinoListTile.notched(
-                          backgroundColor: Colors.black87,
-                          leading: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7),
-                              color: CupertinoColors.systemPurple,
-                            ),
-                            child: const Icon(
-                              CupertinoIcons.mail_solid,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ),
-                          additionalInfo: Obx(
-                            () => Text(
-                              accountsController
-                                  .guruModels.value!.data.guruEmail!,
-                              style: kDefaultTextStyle(
-                                  color: Colors.white38, fontSize: 12),
-                            ),
-                          ),
-                          title: Text(
-                            'Email',
-                            style: kDefaultTextStyle(
-                                fontSize: 15, color: Colors.white),
-                          ),
-                          // trailing: const CupertinoListTileChevron(),
-                          // onTap: () {},
-                        ),
                         CupertinoListTile.notched(
                           backgroundColor: Colors.black87,
                           leading: Container(

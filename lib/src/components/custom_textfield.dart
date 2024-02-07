@@ -61,7 +61,7 @@ class KTextField {
       },
       controller: controller, //controller password
       decoration: InputDecoration(
-          hintStyle: kDefaultTextStyle(color: Colors.white, fontSize: 15),
+          hintStyle: kDefaultTextStyle(color: Colors.white54, fontSize: 15),
           // label: Text(label),
           hintText: label,
           filled: true,

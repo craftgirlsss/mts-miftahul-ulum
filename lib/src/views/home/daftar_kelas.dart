@@ -93,27 +93,42 @@ class _DaftarKelasState extends State<DaftarKelas> {
             : "Tambah",
         contentPadding: const EdgeInsets.all(10),
         onConfirm: () async {
-          List<Map<String, dynamic>> dataManual = [];
-          dataManual.add({
-            'siswa_nama': namaController.text,
-            'siswa_nis': nisController.text,
-            'guru_id': accountsController.guruModels.value?.data.guruId ?? '0',
-            'keterangan': keteranganController.text,
-            'gender': jenisKelaminController.text,
-            'longitude': locationController.longitude.value,
-            'latitude': locationController.latitude.value,
-            'location': locationController.currentAddress.value
-          });
-          if (await siswaController.tambahDataManual(absenManual: dataManual) ==
-              true) {
-            dataManual.clear();
-            Future.delayed(Duration.zero, () {
-              Navigator.pop(context);
+          if (namaController.text.isNotEmpty &&
+              nisController.text.isNotEmpty &&
+              keteranganController.text.isNotEmpty &&
+              jenisKelaminController.text.isNotEmpty) {
+            List<Map<String, dynamic>> dataManual = [];
+            dataManual.add({
+              'siswa_nama': namaController.text,
+              'siswa_nis': nisController.text,
+              'guru_id':
+                  accountsController.guruModels.value?.data.guruId ?? '0',
+              'keterangan': keteranganController.text,
+              'gender': jenisKelaminController.text,
+              'longitude': locationController.longitude.value,
+              'latitude': locationController.latitude.value,
+              'location': locationController.currentAddress.value
             });
+            if (await siswaController.tambahDataManual(
+                    absenManual: dataManual) ==
+                true) {
+              dataManual.clear();
+              keteranganController.clear();
+              namaController.clear();
+              nisController.clear();
+              jenisKelaminController.clear();
+              Future.delayed(Duration.zero, () {
+                Navigator.pop(context);
+              });
+            } else {
+              Future.delayed(Duration.zero, () {
+                Navigator.pop(context);
+              });
+            }
           } else {
-            Future.delayed(Duration.zero, () {
-              Navigator.pop(context);
-            });
+            Navigator.pop(context);
+            Get.snackbar('Gagal', "Mohon isi semua data form",
+                backgroundColor: Colors.red, colorText: Colors.white);
           }
         });
   }
@@ -254,20 +269,13 @@ class _DaftarKelasState extends State<DaftarKelas> {
                                             ));
                                       },
                                       leading: Container(
-                                        width: 50,
-                                        height: 50,
+                                        width: 44,
+                                        height: 44,
+                                        alignment: Alignment.center,
                                         decoration: const BoxDecoration(
-                                            color: Colors.white54,
-                                            shape: BoxShape.circle),
-                                        child: Center(
-                                          child: Text(
-                                            (i + 1).toString(),
-                                            style: kDefaultTextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    'assets/images/class.png'))),
                                       ),
                                       title: Text(
                                         "Kelas ${siswaController.daftarKelasModels.value?.data[i].kelasNama ?? '-'}",

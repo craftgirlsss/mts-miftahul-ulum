@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:socio_univ/src/components/custom_textfield.dart';
+import 'package:socio_univ/src/components/loadings.dart';
 import 'package:socio_univ/src/components/styles.dart';
+import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/helpers/focus.dart';
 
 class GantiPassword extends StatefulWidget {
@@ -11,16 +14,15 @@ class GantiPassword extends StatefulWidget {
 }
 
 class _GantiPasswordState extends State<GantiPassword> {
-  final passwordsekarang = TextEditingController();
+  AccountsController accountsController = Get.find();
   final passwordbaru1 = TextEditingController();
-  final passwordbaru2 = TextEditingController();
   final textfield = KTextField();
-  bool tampilsandipasswordsekarang = true;
   bool tampilsandipasswordbaru1 = true;
   bool tampilsandipasswordbaru2 = true;
   bool isPasswordEightCharacters = false;
   bool hasPasswordOneNumber = false;
   bool hasLowerUpper = false;
+  bool isTheSameWithNewPass = false;
 
   onPasswordChanged(String password) {
     final numericRegex = RegExp(r'[0-9]');
@@ -51,81 +53,81 @@ class _GantiPasswordState extends State<GantiPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => focusManager(),
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          title: Text(
-            "Ganti Password",
-            style: kDefaultTextStyle(fontSize: 17),
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => focusManager(),
+          child: Scaffold(
+            backgroundColor: Colors.black,
+            appBar: AppBar(
+              title: Text(
+                "Ganti Password",
+                style: kDefaultTextStyle(fontSize: 17),
+              ),
+            ),
+            body: ListView(
+              padding: const EdgeInsets.all(15),
+              children: [
+                textfield.passwordinput(
+                    obecuretext: tampilsandipasswordbaru1,
+                    controller: passwordbaru1,
+                    label: "Pasword Baru",
+                    onchanged: (text) => onPasswordChanged(text),
+                    setstate: () {
+                      setState(() {
+                        tampilsandipasswordbaru1 = !tampilsandipasswordbaru1;
+                      });
+                    }),
+                const SizedBox(height: 15),
+                Roweliminatenumber(
+                    isPasswordEightCharacters: isPasswordEightCharacters),
+                const SizedBox(height: 10),
+                Roweliminatelowup(hasLowerUpper: hasLowerUpper),
+                const SizedBox(height: 10),
+                Roweliminateonenum(hasPasswordOneNumber: hasPasswordOneNumber),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Obx(
+                    () => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green),
+                        onPressed: accountsController.isLoading.value == true
+                            ? null
+                            : () async {
+                                if (passwordbaru1.text.isNotEmpty) {
+                                  if (await accountsController.changePassword(
+                                          guruID: accountsController
+                                              .guruModels.value?.data.guruId,
+                                          newPassword: passwordbaru1.text) ==
+                                      true) {
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      Navigator.pop(context);
+                                    });
+                                  }
+                                } else {
+                                  Get.snackbar("Gagal",
+                                      "Password baru tidak boleh kosong.",
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white);
+                                }
+                              },
+                        child: Text(
+                          accountsController.isLoading.value == true
+                              ? "Loading..."
+                              : "Simpan Perubahan",
+                          style: kDefaultTextStyle(fontSize: 17),
+                        )),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(15),
-          children: [
-            // Texfield untuk passsword sekarang
-            textfield.passwordinput(
-                obecuretext: tampilsandipasswordsekarang,
-                controller: passwordsekarang,
-                label: "Password Sekarang",
-                setstate: () {
-                  setState(() {
-                    tampilsandipasswordsekarang = !tampilsandipasswordsekarang;
-                  });
-                }),
-
-            const SizedBox(height: 20),
-
-            // TextField untuk password baru 1
-            textfield.passwordinput(
-                obecuretext: tampilsandipasswordbaru1,
-                controller: passwordbaru1,
-                label: "Pasword Baru",
-                onchanged: (text) => onPasswordChanged(text),
-                setstate: () {
-                  setState(() {
-                    tampilsandipasswordbaru1 = !tampilsandipasswordbaru1;
-                  });
-                }),
-
-            const SizedBox(height: 10),
-            //eliminasi
-            // logic.eliminate(context: context, text: passwordbaru1.text),
-            Roweliminatenumber(
-                isPasswordEightCharacters: isPasswordEightCharacters),
-
-            const SizedBox(height: 10),
-
-            Roweliminatelowup(hasLowerUpper: hasLowerUpper),
-
-            const SizedBox(height: 10),
-            Roweliminateonenum(hasPasswordOneNumber: hasPasswordOneNumber),
-
-            const SizedBox(height: 10),
-            //Textfield untuk password baru 2
-            textfield.passwordinput(
-                obecuretext: tampilsandipasswordbaru2,
-                controller: passwordbaru2,
-                label: "Password Baru",
-                setstate: () {
-                  setState(() {
-                    tampilsandipasswordbaru2 = !tampilsandipasswordbaru2;
-                  });
-                }),
-            Padding(
-                padding: const EdgeInsets.all(20),
-                child: ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    onPressed: () {},
-                    child: Text(
-                      "Simpan Perubahan",
-                      style: kDefaultTextStyle(fontSize: 17),
-                    ))),
-          ],
-        ),
-      ),
+        Obx(() => accountsController.isLoading.value == true
+            ? floatingLoading()
+            : const SizedBox()),
+      ],
     );
   }
 }

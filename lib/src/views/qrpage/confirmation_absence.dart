@@ -311,15 +311,15 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                                   siswaController.personsV2.clear();
                                   Navigator.pop(context);
                                 });
-                                // Get.defaultDialog(
-                                //     backgroundColor: Colors.green.shade400,
-                                //     title: "Berhasil",
-                                //     content: const Text(
-                                //         "Berhasil upload data absensi"),
-                                //     barrierDismissible: false,
-                                //     onConfirm: () {
-                                //       Get.back();
-                                //     });
+                              } else {
+                                Get.snackbar("Berhasil",
+                                    "Berhasil mengirim data absensi",
+                                    backgroundColor: Colors.white,
+                                    colorText: Colors.black87);
+                                Future.delayed(const Duration(seconds: 2), () {
+                                  siswaController.personsV2.clear();
+                                  Navigator.pop(context);
+                                });
                               }
                               // Get.off(() => const MainPage());
                             },

@@ -145,6 +145,7 @@ class SiswaController extends GetxController {
           });
 
       if (response.statusCode == 200) {
+        print(jsonDecode(response.body));
         isLoading(false);
         if (jsonDecode(response.body)['message'] ==
             "1 berhasil absen dan 0 gagal absen.") {
@@ -161,6 +162,7 @@ class SiswaController extends GetxController {
           isLoading(false);
           return false;
         } else {
+          print("masuk ke Else");
           return false;
         }
       } else {

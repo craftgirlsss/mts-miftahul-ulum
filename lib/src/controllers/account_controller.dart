@@ -27,7 +27,6 @@ class AccountsController extends GetxController {
             'nip': nip,
             'password': password,
           }).timeout(const Duration(seconds: 15));
-
       if (response.statusCode == 200) {
         isLoading(false);
         // print(jsonDecode(response.body));
@@ -35,15 +34,17 @@ class AccountsController extends GetxController {
           prefs.setBool('login', true);
           guruModels.value = GuruModels.fromJson(jsonDecode(response.body));
           prefs.setString('nip', jsonDecode(response.body)['data']['guru_nip']);
-          siswaController.daftarKelasHariIni(
+          prefs.setString(
+              'guruID', jsonDecode(response.body)['data']['guru_id']);
+          await siswaController.daftarKelasHariIni(
               guruID: jsonDecode(response.body)['data']['guru_id']);
           Get.snackbar("Berhasil",
               "Berhasil masuk, Anda akan diarahkan ke halaman homepage",
               backgroundColor: Colors.white, colorText: Colors.black87);
           return true;
         } else {
-          Get.snackbar("Gagal",
-              "Gagal masuk, status json ${json.decode(response.body)['success']}",
+          Get.snackbar(
+              "Gagal", "Gagal masuk, NIP tidak ditemukan atau password salah",
               backgroundColor: Colors.red, colorText: Colors.white);
           isLoading(false);
           return false;
@@ -130,7 +131,48 @@ class AccountsController extends GetxController {
           return true;
         } else {
           Get.snackbar("Gagal",
-              "Gagl menghubungkan ke server karna kode ${response.statusCode}",
+              "Gagl menghubungkan ke server karna kode ${jsonDecode(response.body)['message']}",
+              backgroundColor: Colors.red, colorText: Colors.white);
+          isLoading(false);
+          return false;
+        }
+      } else {
+        isLoading(false);
+        Get.snackbar("Gagal",
+            "Gagal masuk, Satatus ${json.decode(response.body)['success']}",
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return false;
+      }
+    } catch (e) {
+      isLoading(false);
+      Get.snackbar("Gagal", "$e",
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return false;
+    }
+  }
+
+  Future<bool> changePassword({String? newPassword, String? guruID}) async {
+    try {
+      isLoading(true);
+      http.Response response = await http.post(
+          Uri.tryParse(
+              "https://api.miftahululumts.sch.id/auth/changePassword")!,
+          headers: {
+            'x_api_key': 'ZjE1ZTEzOTQwNjhhMWQ2ZmQ0Njk4NzVkNmYwMDczMTk'
+          },
+          body: {
+            'guruID': guruID,
+            'new_password': newPassword,
+          });
+
+      if (response.statusCode == 200) {
+        isLoading(false);
+        if (jsonDecode(response.body)['success'] == true) {
+          Get.snackbar("Berhasil", jsonDecode(response.body)['message'],
+              backgroundColor: Colors.white, colorText: Colors.black87);
+          return true;
+        } else {
+          Get.snackbar("Gagal", jsonDecode(response.body)['message'],
               backgroundColor: Colors.red, colorText: Colors.white);
           isLoading(false);
           return false;

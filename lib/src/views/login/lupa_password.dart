@@ -1,4 +1,3 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:socio_univ/src/components/buttons.dart';
@@ -39,10 +38,13 @@ class _LupaPasswordState extends State<LupaPassword> {
     final emailField = TextFormField(
       autovalidateMode: AutovalidateMode.always,
       controller: emailController,
+      cursorColor: Colors.white,
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
       style: kDefaultTextStyle(color: Colors.black87, fontSize: 15),
       decoration: InputDecoration(
+        errorStyle:
+            kDefaultTextStyle(color: Colors.yellow.shade800, fontSize: 14),
         prefixIcon: const Icon(
           Icons.email,
           color: Colors.black54,
@@ -57,8 +59,14 @@ class _LupaPasswordState extends State<LupaPassword> {
           borderRadius: BorderRadius.circular(32.0),
         ),
       ),
-      onChanged: (text) {
-        assert(EmailValidator.validate(text));
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Mohon masukkan email anda untuk mereset';
+        } else if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
+            .hasMatch(value)) {
+          return 'Mohon masukkan email yang valid';
+        }
+        return null; // Return null if the input is valid
       },
     );
 
@@ -67,77 +75,78 @@ class _LupaPasswordState extends State<LupaPassword> {
         GestureDetector(
           onTap: () => focusManager(),
           child: Scaffold(
+            backgroundColor: Colors.green.shade600,
+            appBar: AppBar(
+              elevation: 0,
               backgroundColor: Colors.green.shade600,
-              appBar: AppBar(
-                elevation: 0,
-                backgroundColor: Colors.green.shade600,
-                title: Text(
-                  "Lupa Password",
-                  style:
-                      kDefaultTextStyleBold(color: Colors.white, fontSize: 23),
-                ),
+              title: Text(
+                "Lupa Password",
+                style: kDefaultTextStyleBold(color: Colors.white, fontSize: 23),
               ),
-              body: SingleChildScrollView(
-                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                child: Column(
-                  children: [
-                    Container(
-                        alignment: Alignment.center,
-                        height: MediaQuery.of(context).size.height,
-                        child: Form(
-                          key: _keyFormLogin,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                logo,
-                                const SizedBox(height: 10),
-                                Hero(
-                                  tag: "sekolah",
-                                  child: DefaultTextStyle(
-                                    style: kDefaultTextStyleBold(fontSize: 20),
-                                    child: const Text(
-                                      "Aplikasi Absensi Siswa\nMTs Miftahul Ulum\nPasean Pamekasan",
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    height: MediaQuery.of(context).size.height,
+                    child: Form(
+                      key: _keyFormLogin,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            logo,
+                            const SizedBox(height: 10),
+                            Hero(
+                              tag: "sekolah",
+                              child: DefaultTextStyle(
+                                style: kDefaultTextStyleBold(fontSize: 20),
+                                child: const Text(
+                                  "Aplikasi Absensi Siswa\nMTs Miftahul Ulum\nPasean Pamekasan",
+                                  textAlign: TextAlign.center,
                                 ),
-                                const SizedBox(height: 20),
-                                const SizedBox(height: 10),
-                                emailField,
-                                const SizedBox(height: 20),
-                                Obx(
-                                  () => kDefaultButtons(
-                                      backgroundColor: Colors.black87,
-                                      onPressed: accountsController
-                                                  .isLoading.value ==
-                                              true
-                                          ? () {}
-                                          : () async {
-                                              if (await accountsController
-                                                      .forgotPassword() ==
-                                                  true) {
-                                                Future.delayed(
-                                                    const Duration(seconds: 3),
-                                                    () {
-                                                  Get.back();
-                                                });
-                                              }
-                                            },
-                                      title:
-                                          accountsController.isLoading.value ==
-                                                  true
-                                              ? 'Mengirim Email...'
-                                              : "Kirim Kode Verifikasi"),
-                                ),
-                                const SizedBox(height: 20),
-                              ],
+                              ),
                             ),
-                          ),
-                        )),
-                  ],
-                ),
-              )),
+                            const SizedBox(height: 20),
+                            const SizedBox(height: 10),
+                            emailField,
+                            const SizedBox(height: 20),
+                            Obx(() => kDefaultButtons(
+                                backgroundColor: Colors.black87,
+                                onPressed: accountsController.isLoading.value ==
+                                        true
+                                    ? () {}
+                                    : () async {
+                                        if (_keyFormLogin.currentState!
+                                            .validate()) {
+                                          if (await accountsController
+                                                  .forgotPassword(
+                                                      email: emailController
+                                                          .text) ==
+                                              true) {
+                                            Future.delayed(
+                                                const Duration(seconds: 3), () {
+                                              Navigator.pop(context);
+                                            });
+                                          }
+                                        }
+                                      },
+                                title:
+                                    accountsController.isLoading.value == true
+                                        ? 'Mengirim Email...'
+                                        : "Kirim Kode Verifikasi")),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
         Obx(() => accountsController.isLoading.value == true
             ? floatingLoading()
