@@ -112,7 +112,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    accountsController.getDataPengajar();
+    accountsController.getDataPengajar(context);
     super.initState();
     _getCurrentLocation();
     marker();

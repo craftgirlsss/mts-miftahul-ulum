@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
+import 'package:socio_univ/main.dart';
 import 'package:socio_univ/src/controllers/splash_controller.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -9,6 +10,7 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(versionAPP);
     return Scaffold(
       backgroundColor: Colors.green.shade500,
       body: SafeArea(

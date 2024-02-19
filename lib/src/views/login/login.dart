@@ -186,7 +186,7 @@ class _ViewLoginState extends State<ViewLogin> {
                                         ? () {}
                                         : () async {
                                             if (await accountsController
-                                                    .loginGuru(
+                                                    .loginGuru(context,
                                                         nip: emailController
                                                             .text,
                                                         password: passController
@@ -197,16 +197,6 @@ class _ViewLoginState extends State<ViewLogin> {
                                                   () {
                                                 Get.to(() => const MainPage());
                                               });
-                                            } else {
-                                              Get.defaultDialog(
-                                                  title: "Gagal",
-                                                  content: const Text(
-                                                      "Gagal menghubungkan ke server"),
-                                                  cancel: TextButton(
-                                                      onPressed: () {
-                                                        Get.back();
-                                                      },
-                                                      child: const Text("OK")));
                                             }
                                           },
                                     title: accountsController.isLoading.value ==

@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socio_univ/main.dart';
 import 'package:socio_univ/src/controllers/siswa_controller.dart';
 import 'package:socio_univ/src/models/guru_models.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../components/alert.dart';
 
 class AccountsController extends GetxController {
   var isLoading = false.obs;
@@ -14,7 +18,7 @@ class AccountsController extends GetxController {
   SiswaController siswaController = Get.put(SiswaController());
   var guruID = ''.obs;
 
-  Future<bool> loginGuru({String? nip, String? password}) async {
+  Future<bool> loginGuru(context, {String? nip, String? password}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       isLoading(true);
@@ -29,25 +33,37 @@ class AccountsController extends GetxController {
           }).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         isLoading(false);
-        // print(jsonDecode(response.body));
-        if (jsonDecode(response.body)['success'] == true) {
-          prefs.setBool('login', true);
-          guruModels.value = GuruModels.fromJson(jsonDecode(response.body));
-          prefs.setString('nip', jsonDecode(response.body)['data']['guru_nip']);
-          prefs.setString(
-              'guruID', jsonDecode(response.body)['data']['guru_id']);
-          await siswaController.daftarKelasHariIni(
-              guruID: jsonDecode(response.body)['data']['guru_id']);
-          Get.snackbar("Berhasil",
-              "Berhasil masuk, Anda akan diarahkan ke halaman homepage",
-              backgroundColor: Colors.white, colorText: Colors.black87);
-          return true;
-        } else {
-          Get.snackbar(
-              "Gagal", "Gagal masuk, NIP tidak ditemukan atau password salah",
-              backgroundColor: Colors.red, colorText: Colors.white);
-          isLoading(false);
+        if (jsonDecode(response.body)['version'] != versionAPP) {
+          showAlertDialogUpdate(context,
+              canDissmisable: false,
+              title: "Pembaruan Aplikasi",
+              description:
+                  "Aplikasi tidak dapat digunakan, mohon untuk mendownload aplikasi terbaru ke situs resmi MTs",
+              onOk: () {
+            launchUrl(Uri.parse('https://miftahululumts.sch.id/'));
+          });
           return false;
+        } else {
+          if (jsonDecode(response.body)['success'] == true) {
+            prefs.setBool('login', true);
+            guruModels.value = GuruModels.fromJson(jsonDecode(response.body));
+            prefs.setString(
+                'nip', jsonDecode(response.body)['data']['guru_nip']);
+            prefs.setString(
+                'guruID', jsonDecode(response.body)['data']['guru_id']);
+            await siswaController.daftarKelasHariIni(
+                guruID: jsonDecode(response.body)['data']['guru_id']);
+            Get.snackbar("Berhasil",
+                "Berhasil masuk, Anda akan diarahkan ke halaman homepage",
+                backgroundColor: Colors.white, colorText: Colors.black87);
+            return true;
+          } else {
+            Get.snackbar(
+                "Gagal", "Gagal masuk, NIP tidak ditemukan atau password salah",
+                backgroundColor: Colors.red, colorText: Colors.white);
+            isLoading(false);
+            return false;
+          }
         }
       } else {
         Get.snackbar("Gagal",
@@ -65,7 +81,7 @@ class AccountsController extends GetxController {
   }
 
   // http://localhost/api-mts/auth/getGuruInfo
-  Future<bool> getDataPengajar() async {
+  Future<bool> getDataPengajar(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       isLoading(true);
@@ -80,19 +96,29 @@ class AccountsController extends GetxController {
 
       if (response.statusCode == 200) {
         isLoading(false);
-        if (jsonDecode(response.body)['success'] == true) {
-          // prefs.setString(
-          //     'guru_id', jsonDecode(response.body)['data']['guru_id']);
-          guruModels.value = GuruModels.fromJson(jsonDecode(response.body));
-          siswaController.daftarKelasHariIni(
-              guruID: jsonDecode(response.body)['data']['guru_id']);
-          return true;
-        } else {
-          Get.snackbar("Gagal",
-              "Gagal masuk, status json ${json.decode(response.body)['success']}",
-              backgroundColor: Colors.red, colorText: Colors.white);
-          isLoading(false);
+        if (jsonDecode(response.body)['version'] != versionAPP) {
+          showAlertDialogUpdate(context,
+              canDissmisable: false,
+              title: "Pembaruan Aplikasi",
+              description:
+                  "Aplikasi tidak dapat digunakan, mohon untuk mendownload aplikasi terbaru ke situs resmi MTs",
+              onOk: () {
+            launchUrl(Uri.parse('https://miftahululumts.sch.id/'));
+          });
           return false;
+        } else {
+          if (jsonDecode(response.body)['success'] == true) {
+            guruModels.value = GuruModels.fromJson(jsonDecode(response.body));
+            siswaController.daftarKelasHariIni(
+                guruID: jsonDecode(response.body)['data']['guru_id']);
+            return true;
+          } else {
+            Get.snackbar("Gagal",
+                "Gagal masuk, status json ${json.decode(response.body)['success']}",
+                backgroundColor: Colors.red, colorText: Colors.white);
+            isLoading(false);
+            return false;
+          }
         }
       } else {
         Get.snackbar("Gagal",

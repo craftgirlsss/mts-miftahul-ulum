@@ -48,6 +48,8 @@ dependencies:
   google_maps_flutter: ^2.5.3
   lottie: ^3.0.0
   collection: ^1.18.0
+  package_info_plus: ^5.0.1
+  url_launcher: ^6.2.4
 
 dev_dependencies:
   flutter_test:
