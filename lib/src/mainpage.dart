@@ -10,6 +10,7 @@ import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/controllers/location_controller.dart';
 import 'package:socio_univ/src/controllers/siswa_controller.dart';
 import 'package:socio_univ/src/views/home/daftar_kelas.dart';
+import 'package:socio_univ/src/views/qrpage/confirmation_page_guru.dart';
 
 import 'views/profile/profile.dart';
 import 'views/qrpage/confirmation_absence.dart';
@@ -174,28 +175,7 @@ class _MainPageState extends State<MainPage> {
           customBorder: const CircleBorder(),
           splashColor: Colors.white10.withOpacity(0.1),
           onTap: () {
-            // print(locationController.currentAddress.value);
-            // print(locationController.longitude.value);
-            // print(locationController.latitude.value);
-            // Get.to(() => const BarcodePage());
             scanQR(context);
-            // siswaController.personsV2.add({
-            //   'nama': 'Rahayu',
-            //   'kelas': '9B',
-            //   'jam_masuk': '10:10',
-            //   'id': '10294'
-            // });
-            // // print(siswaController.personsV2[2]['nama']);
-            // print(siswaController.personsV2);
-            // for (var i in siswaController.personsV2) {
-            //   print(i['nama']);
-            // }
-            // siswaController.getDataSiswa(nis: '220007');
-
-            // Get.to(() => const ConfirmationPage());
-            // Get.to(() => const QRCodePage());
-            // _getCurrentLocation();
-            // if (_currentAddress != null) debugPrint(_currentAddress);
           },
           child: Container(
             width: 70,
@@ -226,21 +206,51 @@ class _MainPageState extends State<MainPage> {
       barcodeScanRes = 'Failed to get platform version.';
     }
     if (!mounted) return;
-    if (await siswaController.getDataSiswa(nis: barcodeScanRes) == true) {
-      HapticFeedback.lightImpact();
-      siswaController.isLoading.value == true;
-      siswaController.personsV2.add({
-        'siswa_nama': siswaController.siswaModels.value?.data.siswaNama,
-        'siswa_nis': siswaController.siswaModels.value?.data.siswaNis ?? '0',
-        'guru_id': accountsController.guruModels.value?.data.guruId ?? '0',
-        'keterangan': 1,
-        'gender': siswaController.siswaModels.value?.data.siswaGender ?? '-',
-        'longitude': locationController.longitude.value,
-        'latitude': locationController.latitude.value,
-        'location': locationController.currentAddress.value
-      });
-      siswaController.isLoading.value == false;
-      Get.to(() => ConfirmationPage(nis: barcodeScanRes));
+
+    if (barcodeScanRes[0] == 'e') {
+      String resultBarcode = barcodeScanRes.substring(1);
+      if (await accountsController.getDataPengajarForAbsence(context,
+              nip: resultBarcode) ==
+          true) {
+        accountsController.daftarAbsenceTempGuru.add({
+          'guru_id': accountsController.guruModelsForAbsence.value?.data.guruId,
+          'guru_nama':
+              accountsController.guruModelsForAbsence.value?.data.guruNama ??
+                  'Tidak ada nama',
+          'guru_nip':
+              accountsController.guruModelsForAbsence.value?.data.guruNip ??
+                  '0',
+          'gender':
+              accountsController.guruModelsForAbsence.value?.data.guruGender ??
+                  'Gender belum diset',
+          'keterangan': 1,
+          'logitude': locationController.longitude.value,
+          'latitude': locationController.latitude.value,
+          'location': locationController.currentAddress.value
+        });
+        print("Ini data sudah masuk");
+        print(
+            "ini isLoading Accounts Controller ${accountsController.isLoading.value}");
+        Get.to(() => const ConfirmationPageGuru());
+      } else {
+        debugPrint("return getdatapengajar false");
+      }
+    } else {
+      if (await siswaController.getDataSiswa(nis: barcodeScanRes) == true) {
+        siswaController.isLoading.value == true;
+        siswaController.personsV2.add({
+          'siswa_nama': siswaController.siswaModels.value?.data.siswaNama,
+          'siswa_nis': siswaController.siswaModels.value?.data.siswaNis ?? '0',
+          'guru_id': accountsController.guruModels.value?.data.guruId ?? '0',
+          'keterangan': 1,
+          'gender': siswaController.siswaModels.value?.data.siswaGender ?? '-',
+          'longitude': locationController.longitude.value,
+          'latitude': locationController.latitude.value,
+          'location': locationController.currentAddress.value
+        });
+        siswaController.isLoading.value == false;
+        Get.to(() => const ConfirmationPage());
+      }
     }
   }
   /* 

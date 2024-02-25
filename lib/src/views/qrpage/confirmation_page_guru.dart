@@ -7,25 +7,24 @@ import 'package:socio_univ/src/components/loadings.dart';
 import 'package:socio_univ/src/components/styles.dart';
 import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/controllers/location_controller.dart';
-import 'package:socio_univ/src/controllers/siswa_controller.dart';
 
-import 'temporary_data_view.dart';
+import 'temporary_data_view_for_guru.dart';
 
-class ConfirmationPage extends StatefulWidget {
-  // final String nis;
-  const ConfirmationPage({
-    super.key,
-    //  required this.nis
-  });
+class ConfirmationPageGuru extends StatefulWidget {
+  const ConfirmationPageGuru({super.key});
 
   @override
-  State<ConfirmationPage> createState() => _ConfirmationPageState();
+  State<ConfirmationPageGuru> createState() => _ConfirmationPageGuruState();
 }
 
-class _ConfirmationPageState extends State<ConfirmationPage> {
-  SiswaController siswaController = Get.find();
+class _ConfirmationPageGuruState extends State<ConfirmationPageGuru> {
   AccountsController accountsController = Get.find();
   LocationController locationController = Get.find();
+  @override
+  void initState() {
+    // accountsController.isLoading.value = false;
+    super.initState();
+  }
 
   // This shows a CupertinoModalPopup which hosts a CupertinoAlertDialog.
   void showAlertDialog(context, {Function()? onOK}) {
@@ -53,11 +52,6 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -72,10 +66,11 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
             automaticallyImplyLeading: false,
             actions: [
               Obx(
-                () => siswaController.isLoading.value == true
+                () => accountsController.isLoading.value == true
                     ? Container()
                     : TextButton(
-                        onPressed: siswaController.personsV2.isEmpty
+                        onPressed: accountsController
+                                .daftarAbsenceTempGuru.isEmpty
                             ? () {
                                 Get.snackbar("Informasi",
                                     "Belum ada data ditambahkan, mohon klik lanjutkan scan untuk menambah data",
@@ -83,7 +78,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                                     backgroundColor: Colors.white);
                               }
                             : () {
-                                Get.to(() => const TemporaryDataView());
+                                Get.to(() => const TemporaryDataViewForGuru());
                               },
                         child: const Text("Lihat Data")),
               )
@@ -126,10 +121,11 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                           ),
                         ),
                         additionalInfo: Obx(
-                          () => siswaController.siswaModels.value != null
+                          () => accountsController.guruModelsForAbsence.value !=
+                                  null
                               ? Text(
-                                  siswaController
-                                          .siswaModels.value?.data.siswaNama ??
+                                  accountsController.guruModelsForAbsence.value
+                                          ?.data.guruNama ??
                                       '-',
                                   style: kDefaultTextStyle(
                                       color: Colors.white38, fontSize: 12),
@@ -141,13 +137,6 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                           style: kDefaultTextStyle(
                               fontSize: 15, color: Colors.white),
                         ),
-                        // trailing: const CupertinoListTileChevron(),
-                        onTap: () {
-                          // Get.defaultDialog(
-                          //     title: "Print",
-                          //     content:
-                          //         Text(jsonEncode(siswaController.personsV2)));
-                        },
                       ),
                       CupertinoListTile.notched(
                         backgroundColor: Colors.black87,
@@ -165,10 +154,11 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                           ),
                         ),
                         additionalInfo: Obx(
-                          () => siswaController.siswaModels.value != null
+                          () => accountsController.guruModelsForAbsence.value !=
+                                  null
                               ? Text(
-                                  siswaController.siswaModels.value?.data
-                                          .siswaGender ??
+                                  accountsController.guruModelsForAbsence.value
+                                          ?.data.guruGender ??
                                       '-',
                                   style: kDefaultTextStyle(
                                       color: Colors.white38, fontSize: 12),
@@ -180,8 +170,6 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                           style: kDefaultTextStyle(
                               fontSize: 15, color: Colors.white),
                         ),
-                        // trailing: const CupertinoListTileChevron(),
-                        // onTap: () {},
                       ),
                       CupertinoListTile.notched(
                         backgroundColor: Colors.black87,
@@ -199,10 +187,11 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                           ),
                         ),
                         additionalInfo: Obx(
-                          () => siswaController.siswaModels.value != null
+                          () => accountsController.guruModelsForAbsence.value !=
+                                  null
                               ? Text(
-                                  siswaController.siswaModels.value?.data
-                                          .siswaKelasterima ??
+                                  accountsController.guruModelsForAbsence.value
+                                          ?.data.guruTempat ??
                                       '-',
                                   style: kDefaultTextStyle(
                                       color: Colors.white38, fontSize: 12),
@@ -210,12 +199,10 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                               : const Text('-'),
                         ),
                         title: Text(
-                          'Kelas',
+                          'Penempatan',
                           style: kDefaultTextStyle(
                               fontSize: 15, color: Colors.white),
                         ),
-                        // trailing: const CupertinoListTileChevron(),
-                        // onTap: () {},
                       ),
                       CupertinoListTile.notched(
                         backgroundColor: Colors.black87,
@@ -233,21 +220,20 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                           ),
                         ),
                         additionalInfo: Obx(
-                          () => siswaController.siswaModels.value != null
+                          () => accountsController.guruModelsForAbsence.value !=
+                                  null
                               ? Text(
-                                  "${siswaController.siswaModels.value?.data.siswaNis ?? 0}",
+                                  "${accountsController.guruModelsForAbsence.value?.data.guruNip ?? 0}",
                                   style: kDefaultTextStyle(
                                       color: Colors.white38, fontSize: 12),
                                 )
                               : const Text('-'),
                         ),
                         title: Text(
-                          'NIS',
+                          'NIP',
                           style: kDefaultTextStyle(
                               fontSize: 15, color: Colors.white),
                         ),
-                        // trailing: const CupertinoListTileChevron(),
-                        // onTap: () {},
                       ),
                       CupertinoListTile.notched(
                         backgroundColor: Colors.black87,
@@ -265,21 +251,20 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                           ),
                         ),
                         additionalInfo: Obx(
-                          () => siswaController.siswaModels.value != null
+                          () => accountsController.guruModelsForAbsence.value !=
+                                  null
                               ? Text(
-                                  "${siswaController.siswaModels.value?.data.siswaId ?? 0}",
+                                  "${accountsController.guruModelsForAbsence.value?.data.guruId ?? 0}",
                                   style: kDefaultTextStyle(
                                       color: Colors.white38, fontSize: 12),
                                 )
                               : const Text('-'),
                         ),
                         title: Text(
-                          'ID Siswa',
+                          'ID Guru',
                           style: kDefaultTextStyle(
                               fontSize: 15, color: Colors.white),
                         ),
-                        // trailing: const CupertinoListTileChevron(),
-                        // onTap: () {},
                       ),
                     ],
                   )
@@ -297,16 +282,20 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                   () => ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: CupertinoColors.activeBlue),
-                      onPressed: siswaController.isLoading.value == true
-                          ? () {}
+                      onPressed: accountsController.isLoading.value == true
+                          ? () {
+                              debugPrint("Masih Loading");
+                            }
                           : () {
                               showAlertDialog(context, onOK: () async {
                                 Navigator.pop(context);
-                                if (await siswaController.finishAbsensi() ==
+                                if (await accountsController
+                                        .finishAbsensiGuru() ==
                                     true) {
-                                  siswaController.personsV2.clear();
                                   Future.delayed(const Duration(seconds: 2),
                                       () {
+                                    accountsController.daftarAbsenceTempGuru
+                                        .clear();
                                     Navigator.pop(context);
                                   });
                                 } else {
@@ -314,9 +303,6 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                                     Navigator.pop(context);
                                   });
                                 }
-                                await siswaController.daftarKelasHariIni(
-                                    guruID: accountsController
-                                        .guruModels.value?.data.guruId);
                               });
                             },
                       child: Text(
@@ -331,13 +317,13 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                     () => ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: CupertinoColors.activeGreen),
-                      onPressed: siswaController.isLoading.value == true
+                      onPressed: accountsController.isLoading.value == true
                           ? () {}
                           : () {
                               scanQR(context);
                             },
                       child: Text(
-                        siswaController.isLoading.value == true
+                        accountsController.isLoading.value == true
                             ? "Saving..."
                             : "Lanjutkan Scan",
                         style: kDefaultTextStyle(
@@ -350,7 +336,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
             ),
           ),
         ),
-        Obx(() => siswaController.isLoading.value == true
+        Obx(() => accountsController.isLoading.value == true
             ? floatingLoading()
             : const SizedBox()),
       ],
@@ -358,7 +344,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
   }
 
   Future<void> scanQR(context) async {
-    String barcodeScanRes = '';
+    String barcodeScanRes;
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
@@ -367,34 +353,35 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
     }
     if (!mounted) return;
 
-    if (barcodeScanRes[0] == 'e') {
-      Get.snackbar("Gagal",
-          "Mohon jika sedang mengabsensi siswa, untuk diselesaikan terlebih dahulu, dan jika sudah klik tombol Akhiri Absensi.",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 5));
-    } else {
-      if (await siswaController.getDataSiswa(nis: barcodeScanRes) == true) {
-        HapticFeedback.heavyImpact();
-        SystemSound.play(SystemSoundType.click);
-        siswaController.isLoading.value == true;
+    debugPrint(barcodeScanRes);
 
-        siswaController.personsV2.add({
-          'siswa_nama': siswaController.siswaModels.value?.data.siswaNama,
-          'siswa_nis': siswaController.siswaModels.value?.data.siswaNis ?? 0,
-          'guru_id': accountsController.guruModels.value?.data.guruId ?? 0,
+    if (barcodeScanRes[0] == 'e') {
+      String resultBarcode = barcodeScanRes.substring(1);
+      if (await accountsController.getDataPengajarForAbsence(context,
+              nip: resultBarcode) ==
+          true) {
+        accountsController.daftarAbsenceTempGuru.add({
+          'guru_id': accountsController.guruModelsForAbsence.value?.data.guruId,
+          'guru_nama':
+              accountsController.guruModelsForAbsence.value?.data.guruNama ??
+                  'Tidak ada nama',
+          'guru_nip':
+              accountsController.guruModelsForAbsence.value?.data.guruNip ??
+                  '0',
+          'gender':
+              accountsController.guruModelsForAbsence.value?.data.guruGender ??
+                  'Gender belum diset',
           'keterangan': 1,
-          'gender': siswaController.siswaModels.value?.data.siswaGender ?? '-',
-          'longitude': locationController.longitude.value,
+          'logitude': locationController.longitude.value,
           'latitude': locationController.latitude.value,
           'location': locationController.currentAddress.value
         });
-        for (int i = 0; i < siswaController.personsV2.length; i++) {
-          print(siswaController.personsV2[i]['siswa_nama']);
-        }
-        siswaController.isLoading.value == false;
-        Get.to(() => const ConfirmationPage());
+        Get.to(() => const ConfirmationPageGuru());
       }
+    } else {
+      Get.snackbar("Gagal",
+          "Mohon jika sedang mengabsensi guru, untuk diselesaikan terlebih dahulu, dan jika sudah klik tombol Akhiri Absensi.",
+          backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 }

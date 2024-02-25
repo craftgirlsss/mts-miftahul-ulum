@@ -6,23 +6,31 @@ import 'package:socio_univ/src/components/loadings.dart';
 import 'package:socio_univ/src/components/styles.dart';
 import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/controllers/location_controller.dart';
-import 'package:socio_univ/src/controllers/siswa_controller.dart';
 
-class TemporaryDataView extends StatefulWidget {
-  const TemporaryDataView({super.key});
+class TemporaryDataViewForGuru extends StatefulWidget {
+  const TemporaryDataViewForGuru({super.key});
 
   @override
-  State<TemporaryDataView> createState() => _TemporaryDataViewState();
+  State<TemporaryDataViewForGuru> createState() =>
+      _TemporaryDataViewForGuruState();
 }
 
-class _TemporaryDataViewState extends State<TemporaryDataView> {
-  SiswaController siswaController = Get.find();
+class _TemporaryDataViewForGuruState extends State<TemporaryDataViewForGuru> {
   LocationController locationController = Get.find();
   AccountsController accountsController = Get.find();
   TextEditingController namaController = TextEditingController();
   TextEditingController nisController = TextEditingController();
   TextEditingController keteranganController = TextEditingController();
   TextEditingController jenisKelaminController = TextEditingController();
+
+  @override
+  void dispose() {
+    namaController.dispose();
+    nisController.dispose();
+    keteranganController.dispose();
+    jenisKelaminController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +48,7 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
             ),
             actions: [
               Obx(
-                () => siswaController.isLoading.value == true
+                () => accountsController.isLoading.value == true
                     ? Container()
                     : IconButton(
                         tooltip: "Hapus semua data",
@@ -49,7 +57,7 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
                               description:
                                   "Apakah anda yakin menghapus semua data?",
                               onOk: () {
-                            siswaController.clearingDataTemp();
+                            accountsController.clearingDataTemp();
                             Navigator.pop(context);
                           }, title: "Hapus");
                         },
@@ -62,9 +70,9 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
             ],
           ),
           body: Obx(
-            () => siswaController.isLoading.value == true
+            () => accountsController.isLoading.value == true
                 ? Container()
-                : siswaController.personsV2.isNotEmpty
+                : accountsController.daftarAbsenceTempGuru.isNotEmpty
                     ? ListView.separated(
                         itemBuilder: (context, index) => ListTile(
                               leading: CircleAvatar(
@@ -76,21 +84,23 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
                                 ),
                               ),
                               title: Text(
-                                siswaController.personsV2[index]['siswa_nama']
+                                accountsController.daftarAbsenceTempGuru[index]
+                                        ['guru_nama']
                                     .toString(),
                                 style: kDefaultTextStyle(fontSize: 15),
                               ),
                               subtitle: Text(
-                                  "NIS : ${siswaController.personsV2[index]['siswa_nis']}",
+                                  "NIP : ${accountsController.daftarAbsenceTempGuru[index]['guru_nip']}",
                                   style: kDefaultTextStyle(fontSize: 13)),
                               trailing: Text(
-                                "Gender : ${siswaController.personsV2[index]['gender']}",
+                                "Gender : ${accountsController.daftarAbsenceTempGuru[index]['gender']}",
                                 style: kDefaultTextStyle(fontSize: 12),
                               ),
                             ),
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 10),
-                        itemCount: siswaController.personsV2.length)
+                        itemCount:
+                            accountsController.daftarAbsenceTempGuru.length)
                     : Center(
                         child: Text(
                           "Tidak ada data",
@@ -99,7 +109,7 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
                       ),
           ),
         ),
-        Obx(() => siswaController.isLoading.value == true
+        Obx(() => accountsController.isLoading.value == true
             ? floatingLoading()
             : const SizedBox()),
       ],

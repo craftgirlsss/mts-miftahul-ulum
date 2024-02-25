@@ -50,6 +50,7 @@ dependencies:
   collection: ^1.18.0
   package_info_plus: ^5.0.1
   url_launcher: ^6.2.4
+  flutter_ringtone_player: ^3.2.0
 
 dev_dependencies:
   flutter_test:
