@@ -67,8 +67,6 @@ class SiswaController extends GetxController {
           daftarGuruAbsenModels.value =
               AbsensiGuruModels.fromJson(jsonDecode(response.body));
         } else {
-          Get.snackbar("Gagal", "Gagal mendapatkan info guru karna data kosong",
-              backgroundColor: Colors.red, colorText: Colors.white);
           isLoadingDaftarKelas(false);
           // return false;
         }

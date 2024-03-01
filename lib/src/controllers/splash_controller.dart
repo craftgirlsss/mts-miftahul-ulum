@@ -10,9 +10,9 @@ class SplashController extends GetxController {
     Future.delayed(const Duration(seconds: 4), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (prefs.getBool('login') == true) {
-        Get.off(() => const MainPage());
+        Get.offAll(() => const MainPage());
       } else {
-        Get.to(() => const ViewLogin());
+        Get.offAll(() => const ViewLogin());
       }
     });
   }

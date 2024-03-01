@@ -17,10 +17,10 @@ class DaftarKelas extends StatefulWidget {
 }
 
 class _DaftarKelasState extends State<DaftarKelas> {
-  TextEditingController namaController = TextEditingController();
   TextEditingController nisController = TextEditingController();
   TextEditingController keteranganController = TextEditingController();
-  TextEditingController jenisKelaminController = TextEditingController();
+  TextEditingController nipController = TextEditingController();
+  TextEditingController keteranganGuruController = TextEditingController();
   SiswaController siswaController = Get.find();
   AccountsController accountsController = Get.find();
   LocationController locationController = Get.find();
@@ -30,19 +30,9 @@ class _DaftarKelasState extends State<DaftarKelas> {
         content: Column(
           children: [
             Text(
-              "Tambah data secara manual untuk siswa tidak hadir, izin, atau terlambat. \nAturan keterangan (Masuk = 1, Izin = 2, Sakit = 3, Tidak Diketahui = 4)",
+              "Tambah data absensi secara manual untuk siswa tidak hadir, izin, atau terlambat. \nAturan keterangan (Masuk = 1, Izin = 2, Sakit = 3, Tidak Diketahui = 4)",
               style: kDefaultTextStyle(color: Colors.white),
               textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            CupertinoTextField(
-              controller: namaController,
-              placeholderStyle: const TextStyle(color: Colors.black38),
-              placeholder: "Nama",
-              suffix: const Padding(
-                padding: EdgeInsets.only(right: 8),
-                child: Icon(CupertinoIcons.person, color: Colors.black26),
-              ),
             ),
             const SizedBox(height: 5),
             CupertinoTextField(
@@ -69,15 +59,88 @@ class _DaftarKelasState extends State<DaftarKelas> {
                 child: Icon(CupertinoIcons.news, color: Colors.black26),
               ),
             ),
-            const SizedBox(height: 5),
+          ],
+        ),
+        backgroundColor: Colors.grey.shade900,
+        titleStyle:
+            kDefaultTextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        title: "Tambah Manual",
+        barrierDismissible: true,
+        buttonColor: Colors.green,
+        textConfirm: siswaController.isLoadingDaftarKelas.value == true
+            ? "Loading..."
+            : "Tambah",
+        contentPadding: const EdgeInsets.all(10),
+        onConfirm: () async {
+          if (
+              nisController.text.isNotEmpty &&
+              keteranganController.text.isNotEmpty) {
+            List<Map<String, dynamic>> dataManual = [];
+            dataManual.add({
+              'siswa_nama': '',
+              'siswa_nis': nisController.text,
+              'guru_id':
+                  accountsController.guruModels.value?.data.guruId ?? '0',
+              'keterangan': keteranganController.text,
+              'gender': '',
+              'longitude': locationController.longitude.value,
+              'latitude': locationController.latitude.value,
+              'location': locationController.currentAddress.value
+            });
+            if (await siswaController.tambahDataManual(
+                    absenManual: dataManual) ==
+                true) {
+              dataManual.clear();
+              keteranganController.clear();
+              nisController.clear();
+              Future.delayed(Duration.zero, () {
+                Navigator.pop(context);
+              });
+            } else {
+              Future.delayed(Duration.zero, () {
+                Navigator.pop(context);
+              });
+            }
+          } else {
+            Navigator.pop(context);
+            Get.snackbar('Gagal', "Mohon isi semua data form",
+                backgroundColor: Colors.red, colorText: Colors.white);
+          }
+        });
+  }
+
+  void popUpAddDataGuru() {
+    Get.defaultDialog(
+        content: Column(
+          children: [
+            Text(
+              "Tambah data absensi secara manual untuk guru. \nAturan keterangan (Masuk = 1, Izin = 2, Sakit = 3, Tidak Diketahui = 4)",
+              style: kDefaultTextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
             CupertinoTextField(
-              controller: jenisKelaminController,
+              keyboardType: const TextInputType.numberWithOptions(),
+              controller: nisController,
               placeholderStyle: const TextStyle(color: Colors.black38),
-              placeholder: "Jenis Kelamin (P/L)",
+              placeholder: "NIP",
               suffix: const Padding(
                 padding: EdgeInsets.only(right: 8),
-                child:
-                    Icon(CupertinoIcons.personalhotspot, color: Colors.black26),
+                child: Icon(CupertinoIcons.person_crop_square,
+                    color: Colors.black26),
+              ),
+            ),
+            const SizedBox(height: 5),
+            CupertinoTextField(
+              controller: keteranganController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: false,
+              ),
+              placeholderStyle: const TextStyle(color: Colors.black38),
+              placeholder: "Keterangan",
+              suffix: const Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: Icon(CupertinoIcons.news, color: Colors.black26),
               ),
             ),
           ],
@@ -93,30 +156,27 @@ class _DaftarKelasState extends State<DaftarKelas> {
             : "Tambah",
         contentPadding: const EdgeInsets.all(10),
         onConfirm: () async {
-          if (namaController.text.isNotEmpty &&
+          if (
               nisController.text.isNotEmpty &&
-              keteranganController.text.isNotEmpty &&
-              jenisKelaminController.text.isNotEmpty) {
+              keteranganController.text.isNotEmpty) {
             List<Map<String, dynamic>> dataManual = [];
             dataManual.add({
-              'siswa_nama': namaController.text,
-              'siswa_nis': nisController.text,
+              'guru_nama': "",
+              'guru_nip': nipController.text,
               'guru_id':
                   accountsController.guruModels.value?.data.guruId ?? '0',
-              'keterangan': keteranganController.text,
-              'gender': jenisKelaminController.text,
+              'keterangan': keteranganGuruController.text,
+              'gender': '',
               'longitude': locationController.longitude.value,
               'latitude': locationController.latitude.value,
               'location': locationController.currentAddress.value
             });
-            if (await siswaController.tambahDataManual(
+            if (await accountsController.tambahDataManualAbsensiGuru(
                     absenManual: dataManual) ==
                 true) {
               dataManual.clear();
-              keteranganController.clear();
-              namaController.clear();
-              nisController.clear();
-              jenisKelaminController.clear();
+              keteranganGuruController.clear();
+              nipController.clear();
               Future.delayed(Duration.zero, () {
                 Navigator.pop(context);
               });
@@ -141,10 +201,10 @@ class _DaftarKelasState extends State<DaftarKelas> {
 
   @override
   void dispose() {
-    namaController.dispose();
+    nipController.dispose();
     nisController.dispose();
     keteranganController.dispose();
-    jenisKelaminController.dispose();
+    keteranganGuruController.dispose();
     super.dispose();
   }
 
@@ -387,7 +447,7 @@ class _DaftarKelasState extends State<DaftarKelas> {
                                     IconButton(
                                       tooltip: "Tambah Data",
                                       onPressed: () {
-                                        popUpAddData();
+                                        popUpAddDataGuru();
                                       },
                                       icon: const Icon(
                                         CupertinoIcons.add,

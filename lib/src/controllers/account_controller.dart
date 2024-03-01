@@ -35,6 +35,7 @@ class AccountsController extends GetxController {
             'password': password,
           }).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
+        print(jsonDecode(response.body));
         isLoading(false);
         if (jsonDecode(response.body)['version'] != versionAPP) {
           showAlertDialogUpdate(context,
@@ -43,7 +44,8 @@ class AccountsController extends GetxController {
               description:
                   "Aplikasi tidak dapat digunakan, mohon untuk mendownload aplikasi terbaru ke situs resmi MTs",
               onOk: () {
-            launchUrl(Uri.parse('https://miftahululumts.sch.id/'));
+            launchUrl(Uri.parse(jsonDecode(response.body)['download'] ??
+                'https://miftahululumts.sch.id'));
           });
           return false;
         } else {
@@ -99,6 +101,7 @@ class AccountsController extends GetxController {
 
       if (response.statusCode == 200) {
         isLoading(false);
+        print(jsonDecode(response.body));
         if (jsonDecode(response.body)['version'] != versionAPP) {
           showAlertDialogUpdate(context,
               canDissmisable: false,
@@ -320,6 +323,49 @@ class AccountsController extends GetxController {
             backgroundColor: Colors.red, colorText: Colors.white);
         return false;
       }
+    }
+  }
+
+  Future<bool> tambahDataManualAbsensiGuru(
+      {List<Map<String, dynamic>>? absenManual}) async {
+    try {
+      isLoading(true);
+      http.Response response = await http.post(
+          Uri.tryParse("https://api.miftahululumts.sch.id/guru/absen")!,
+          headers: {
+            'x_api_key': 'ZjE1ZTEzOTQwNjhhMWQ2ZmQ0Njk4NzVkNmYwMDczMTk'
+          },
+          body: {
+            'dump': jsonEncode(absenManual),
+          });
+
+      if (response.statusCode == 200) {
+        print(jsonDecode(response.body));
+        isLoading(false);
+        if (jsonDecode(response.body)['success'] == true) {
+          Get.snackbar(
+              "Berhasil", "Berhasil menambah data absensi secara manual",
+              backgroundColor: Colors.white, colorText: Colors.black87);
+          return true;
+        } else {
+          isLoading(false);
+          Get.snackbar("Gagal",
+              "Gagl menghubungkan ke server karna message ${jsonDecode(response.body)['message']}",
+              backgroundColor: Colors.red, colorText: Colors.white);
+          return false;
+        }
+      } else {
+        isLoading(false);
+        Get.snackbar("Gagal",
+            "Gagal masuk, Satatus ${json.decode(response.body)['success']}",
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return false;
+      }
+    } catch (e) {
+      isLoading(false);
+      Get.snackbar("Gagal", "$e",
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return false;
     }
   }
 }

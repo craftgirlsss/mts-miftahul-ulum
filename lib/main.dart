@@ -14,7 +14,6 @@ void main() async {
   versionAPP = packageInfo.version;
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
