@@ -42,8 +42,7 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
               Obx(
                 () => siswaController.isLoading.value == true
                     ? Container()
-                    : IconButton(
-                        tooltip: "Hapus semua data",
+                    : TextButton(
                         onPressed: () {
                           showAlertDialog(context,
                               description:
@@ -53,10 +52,7 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
                             Navigator.pop(context);
                           }, title: "Hapus");
                         },
-                        icon: const Icon(
-                          CupertinoIcons.trash,
-                          color: Colors.white60,
-                        ),
+                        child: const Text("Delete All", style: TextStyle(color: CupertinoColors.destructiveRed),)
                       ),
               ),
             ],
@@ -67,27 +63,36 @@ class _TemporaryDataViewState extends State<TemporaryDataView> {
                 : siswaController.personsV2.isNotEmpty
                     ? ListView.separated(
                         itemBuilder: (context, index) => ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.white54,
-                                child: Text(
-                                  "${index + 1}",
-                                  style: kDefaultTextStyle(
-                                      fontSize: 18, color: Colors.black87),
-                                ),
-                              ),
-                              title: Text(
-                                siswaController.personsV2[index]['siswa_nama']
-                                    .toString(),
-                                style: kDefaultTextStyle(fontSize: 15),
-                              ),
-                              subtitle: Text(
-                                  "NIS : ${siswaController.personsV2[index]['siswa_nis']}",
-                                  style: kDefaultTextStyle(fontSize: 13)),
-                              trailing: Text(
-                                "Gender : ${siswaController.personsV2[index]['gender']}",
-                                style: kDefaultTextStyle(fontSize: 12),
-                              ),
-                            ),
+                                    leading: CircleAvatar(
+                                      backgroundColor: Colors.white54,
+                                      child: Text(
+                                        "${index + 1}",
+                                        style: kDefaultTextStyle(
+                                            fontSize: 18, color: Colors.black87),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      siswaController.personsV2[index]['siswa_nama']
+                                          .toString(),
+                                      style: kDefaultTextStyle(fontSize: 15),
+                                    ),
+                                    subtitle: Text(
+                                        "NIS : ${siswaController.personsV2[index]['siswa_nis']}",
+                                        style: kDefaultTextStyle(fontSize: 13)),
+                                    trailing: IconButton(onPressed: (){
+                                      showAlertDialog(context,
+                                    description:
+                                        "Apakah anda yakin menghapus data absensi ${siswaController.personsV2[index]['siswa_nama']}?",
+                                    onOk: () {
+                                        setState(() {
+                                          siswaController.personsV2.removeAt(index);
+                                        });
+                                        Navigator.pop(context);
+                                      }, 
+                                    title: "Hapus");    
+                                    }, 
+                                    icon: const Icon(CupertinoIcons.trash, color: Colors.white60,))
+                                  ),
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 10),
                         itemCount: siswaController.personsV2.length)

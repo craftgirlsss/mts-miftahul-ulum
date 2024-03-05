@@ -228,12 +228,13 @@ class _MainPageState extends State<MainPage> {
           'latitude': locationController.latitude.value,
           'location': locationController.currentAddress.value
         });
-        print("Ini data sudah masuk");
-        print(
-            "ini isLoading Accounts Controller ${accountsController.isLoading.value}");
+        // print("Ini data sudah masuk");
+        // print(
+        //     "ini isLoading Accounts Controller ${accountsController.isLoading.value}");
         Get.to(() => const ConfirmationPageGuru());
       } else {
-        debugPrint("return getdatapengajar false");
+        Get.snackbar("Gagal", "Data guru tidak ditemukan, mohon konfirmasikan ke pihak admin karena NIP bersangkutan tidak ada dalam database", backgroundColor: Colors.red, colorText: Colors.white);
+        Get.back();
       }
     } else {
       if (await siswaController.getDataSiswa(nis: barcodeScanRes) == true) {
@@ -250,6 +251,9 @@ class _MainPageState extends State<MainPage> {
         });
         siswaController.isLoading.value == false;
         Get.to(() => const ConfirmationPage());
+      }else{
+        Get.snackbar("Gagal", "Data siswa tidak ditemukan, mohon konfirmasikan ke pihak guru karena NIS tidak ada dalam database", backgroundColor: Colors.red, colorText: Colors.white);
+        Get.back();
       }
     }
   }

@@ -7,6 +7,7 @@ import 'package:socio_univ/src/components/loadings.dart';
 import 'package:socio_univ/src/components/styles.dart';
 import 'package:socio_univ/src/controllers/account_controller.dart';
 import 'package:socio_univ/src/controllers/location_controller.dart';
+import 'package:socio_univ/src/controllers/siswa_controller.dart';
 
 import 'temporary_data_view_for_guru.dart';
 
@@ -20,6 +21,7 @@ class ConfirmationPageGuru extends StatefulWidget {
 class _ConfirmationPageGuruState extends State<ConfirmationPageGuru> {
   AccountsController accountsController = Get.find();
   LocationController locationController = Get.find();
+  SiswaController siswaController = Get.find();
   @override
   void initState() {
     // accountsController.isLoading.value = false;
@@ -36,15 +38,15 @@ class _ConfirmationPageGuruState extends State<ConfirmationPageGuru> {
         content: const Text('Apakah anda yakin mengakhiri sesi absensi?'),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
+            isDestructiveAction: true,
             onPressed: () {
               Navigator.pop(context);
             },
             child: const Text('Belum'),
           ),
           CupertinoDialogAction(
-            isDestructiveAction: false,
             onPressed: onOK,
-            child: const Text('Akhiri'),
+            child: Text('Akhiri',style: kDefaultTextStyle(color: CupertinoColors.activeBlue),),
           ),
         ],
       ),
@@ -298,6 +300,7 @@ class _ConfirmationPageGuruState extends State<ConfirmationPageGuru> {
                                         .clear();
                                     Navigator.pop(context);
                                   });
+                                  await siswaController.daftarAbsenGuruHariIni();
                                 } else {
                                   Future.delayed(Duration.zero, () {
                                     Navigator.pop(context);

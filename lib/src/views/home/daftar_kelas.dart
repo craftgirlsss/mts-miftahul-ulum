@@ -90,6 +90,7 @@ class _DaftarKelasState extends State<DaftarKelas> {
             if (await siswaController.tambahDataManual(
                     absenManual: dataManual) ==
                 true) {
+              await siswaController.daftarKelasHariIni(guruID: accountsController.guruModels.value?.data.guruId ?? '0');
               dataManual.clear();
               keteranganController.clear();
               nisController.clear();
@@ -121,7 +122,7 @@ class _DaftarKelasState extends State<DaftarKelas> {
             const SizedBox(height: 10),
             CupertinoTextField(
               keyboardType: const TextInputType.numberWithOptions(),
-              controller: nisController,
+              controller: nipController,
               placeholderStyle: const TextStyle(color: Colors.black38),
               placeholder: "NIP",
               suffix: const Padding(
@@ -132,7 +133,7 @@ class _DaftarKelasState extends State<DaftarKelas> {
             ),
             const SizedBox(height: 5),
             CupertinoTextField(
-              controller: keteranganController,
+              controller: keteranganGuruController,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: false,
               ),
@@ -157,8 +158,8 @@ class _DaftarKelasState extends State<DaftarKelas> {
         contentPadding: const EdgeInsets.all(10),
         onConfirm: () async {
           if (
-              nisController.text.isNotEmpty &&
-              keteranganController.text.isNotEmpty) {
+              nipController.text.isNotEmpty &&
+              keteranganGuruController.text.isNotEmpty) {
             List<Map<String, dynamic>> dataManual = [];
             dataManual.add({
               'guru_nama': "",
@@ -178,6 +179,7 @@ class _DaftarKelasState extends State<DaftarKelas> {
               keteranganGuruController.clear();
               nipController.clear();
               Future.delayed(Duration.zero, () {
+                siswaController.daftarAbsenGuruHariIni();
                 Navigator.pop(context);
               });
             } else {
@@ -210,6 +212,7 @@ class _DaftarKelasState extends State<DaftarKelas> {
 
   @override
   Widget build(BuildContext context) {
+    
     return DefaultTabController(
       length: 2,
       child: Stack(
@@ -463,14 +466,8 @@ class _DaftarKelasState extends State<DaftarKelas> {
                                               tooltip: "Refesh",
                                               onPressed: () {
                                                 siswaController
-                                                    .daftarKelasHariIni(
-                                                        guruID:
-                                                            accountsController
-                                                                    .guruModels
-                                                                    .value
-                                                                    ?.data
-                                                                    .guruId ??
-                                                                '0');
+                                                    .daftarAbsenGuruHariIni();
+                                                print(siswaController.daftarGuruAbsenModels.value?.data.length == 0);
                                               },
                                               icon: const Icon(
                                                 CupertinoIcons.refresh,
@@ -488,28 +485,8 @@ class _DaftarKelasState extends State<DaftarKelas> {
                                       .isLoadingDaftarKelas.value ==
                                   true
                               ? Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height:
-                                      MediaQuery.of(context).size.height / 1.5,
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Lottie.asset('assets/images/no_data.json',
-                                          height: 110),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        "Tidak ada data absen hari ini",
-                                        style: kDefaultTextStyle(fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : siswaController.daftarKelasModels.value?.data
-                                          .length ==
-                                      0
+                              )
+                              : siswaController.daftarGuruAbsenModels.value?.data.length == 0
                                   ? Container(
                                       width: MediaQuery.of(context).size.width,
                                       height:
@@ -543,69 +520,52 @@ class _DaftarKelasState extends State<DaftarKelas> {
                                             dense: false,
                                             // enableFeedback: false,
                                             isThreeLine: true,
-                                            onTap: () {
-                                              Get.to(() => AbsensiPage(
-                                                    index: i,
-                                                    kelas: siswaController
-                                                            .daftarKelasModels
-                                                            .value
-                                                            ?.data[i]
-                                                            .kelasNama ??
-                                                        '-',
-                                                  ));
-                                            },
                                             leading: Container(
                                               width: 44,
                                               height: 44,
                                               alignment: Alignment.center,
-                                              decoration: const BoxDecoration(
-                                                  image: DecorationImage(
-                                                      image: AssetImage(
-                                                          'assets/images/class.png'))),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade200,
+                                                  shape: BoxShape.circle),
+                                              child: const Icon(CupertinoIcons.person),
                                             ),
                                             title: Text(
-                                              "Kelas ${siswaController.daftarKelasModels.value?.data[i].kelasNama ?? '-'}",
+                                              siswaController.daftarGuruAbsenModels.value?.data[i].guruNama ?? 'TIdak ada nama',
                                               style: kDefaultTextStyleBold(
                                                   fontSize: 17),
                                             ),
-
-                                            subtitle: Text(
-                                              "Jumlah siswa terabsensi ${siswaController.daftarKelasModels.value?.data[i].siswa?.length ?? 0}",
-                                              overflow: TextOverflow.clip,
-                                              style: kDefaultTextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.white54),
-                                            ),
-                                            trailing: SizedBox(
-                                              height: double.infinity,
-                                              child: Container(
-                                                decoration: const BoxDecoration(
-                                                    color: Colors.white38,
-                                                    shape: BoxShape.circle),
-                                                child: const Icon(
-                                                  Icons
-                                                      .keyboard_arrow_right_rounded,
-                                                  color: Colors.white54,
-                                                  size: 22,
+                                            subtitle: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "NIP : ${siswaController.daftarGuruAbsenModels.value?.data[i].guruNIP}",
+                                                  overflow: TextOverflow.clip,
+                                                  style: kDefaultTextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.white54),
                                                 ),
-                                              ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text("Pukul : ${siswaController.daftarGuruAbsenModels.value?.data[i].absgruDatetime}", style: kDefaultTextStyle(
+                                                      fontSize: 11,
+                                                      color: Colors.white54),)
+                                                  ],
+                                                )
+                                              ],
                                             ),
                                           ),
                                       separatorBuilder: (c, i) =>
                                           const SizedBox(height: 0),
                                       itemCount: siswaController
-                                              .daftarKelasModels
+                                              .daftarGuruAbsenModels
                                               .value
                                               ?.data
                                               .length ??
-                                          0)),
-                          // siswaController.daftarKelasModels.value?.data.length != 0
-                          //     ? kDefaultButtons(
-                          //         backgroundColor: Colors.green,
-                          //         onPressed: () {},
-                          //         textColor: Colors.white,
-                          //         title: "Lihat Daftar Guru")
-                          //     : Container()
+                                          0),
+                                      ),
                         ],
                       ),
                     ),

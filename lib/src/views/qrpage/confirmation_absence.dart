@@ -37,15 +37,15 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
         content: const Text('Apakah anda yakin mengakhiri sesi absensi?'),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
+            isDestructiveAction: true,
             onPressed: () {
               Navigator.pop(context);
             },
             child: const Text('Belum'),
           ),
           CupertinoDialogAction(
-            isDestructiveAction: false,
             onPressed: onOK,
-            child: const Text('Akhiri'),
+            child: Text('Akhiri', style: kDefaultTextStyle(color: CupertinoColors.activeBlue),),
           ),
         ],
       ),
@@ -375,10 +375,7 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
           duration: const Duration(seconds: 5));
     } else {
       if (await siswaController.getDataSiswa(nis: barcodeScanRes) == true) {
-        HapticFeedback.heavyImpact();
-        SystemSound.play(SystemSoundType.click);
         siswaController.isLoading.value == true;
-
         siswaController.personsV2.add({
           'siswa_nama': siswaController.siswaModels.value?.data.siswaNama,
           'siswa_nis': siswaController.siswaModels.value?.data.siswaNis ?? 0,
@@ -389,9 +386,6 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
           'latitude': locationController.latitude.value,
           'location': locationController.currentAddress.value
         });
-        for (int i = 0; i < siswaController.personsV2.length; i++) {
-          print(siswaController.personsV2[i]['siswa_nama']);
-        }
         siswaController.isLoading.value == false;
         Get.to(() => const ConfirmationPage());
       }

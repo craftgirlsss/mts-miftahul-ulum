@@ -32,6 +32,7 @@ class Data {
     this.absgruStatus,
     this.absgruDatetime,
     this.absgruTimestamp,
+    this.guruNama
   });
   String? idAbsgru;
   String? absgruAbsensor;
@@ -40,7 +41,9 @@ class Data {
   String? absgruLat;
   String? absgruLocation;
   String? absgruStatus;
+  String? guruNama;
   String? absgruDatetime;
+  String? guruNIP;
   String? absgruTimestamp;
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -53,5 +56,7 @@ class Data {
     absgruStatus = json['absgru_status'] ?? '';
     absgruDatetime = json['absgru_datetime'] ?? '';
     absgruTimestamp = json['absgru_timestamp'] ?? '';
+    guruNama = json['guru_nama'];
+    guruNIP = json['guru_nip'];
   }
 }

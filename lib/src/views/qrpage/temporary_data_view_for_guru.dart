@@ -50,8 +50,7 @@ class _TemporaryDataViewForGuruState extends State<TemporaryDataViewForGuru> {
               Obx(
                 () => accountsController.isLoading.value == true
                     ? Container()
-                    : IconButton(
-                        tooltip: "Hapus semua data",
+                    : TextButton(
                         onPressed: () {
                           showAlertDialog(context,
                               description:
@@ -61,10 +60,7 @@ class _TemporaryDataViewForGuruState extends State<TemporaryDataViewForGuru> {
                             Navigator.pop(context);
                           }, title: "Hapus");
                         },
-                        icon: const Icon(
-                          CupertinoIcons.trash,
-                          color: Colors.white60,
-                        ),
+                        child: const Text("Delete All", style: TextStyle(color: CupertinoColors.destructiveRed),)
                       ),
               ),
             ],
@@ -92,10 +88,19 @@ class _TemporaryDataViewForGuruState extends State<TemporaryDataViewForGuru> {
                               subtitle: Text(
                                   "NIP : ${accountsController.daftarAbsenceTempGuru[index]['guru_nip']}",
                                   style: kDefaultTextStyle(fontSize: 13)),
-                              trailing: Text(
-                                "Gender : ${accountsController.daftarAbsenceTempGuru[index]['gender']}",
-                                style: kDefaultTextStyle(fontSize: 12),
-                              ),
+                              trailing: IconButton(onPressed: (){
+                                      showAlertDialog(context,
+                                    description:
+                                        "Apakah anda yakin menghapus data absensi ${accountsController.daftarAbsenceTempGuru[index]['guru_nama']}?",
+                                    onOk: () {
+                                        setState(() {
+                                          accountsController.daftarAbsenceTempGuru.removeAt(index);
+                                        });
+                                        Navigator.pop(context);
+                                      }, 
+                                    title: "Hapus");    
+                                    }, 
+                                    icon: const Icon(CupertinoIcons.trash, color: Colors.white60,))
                             ),
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 10),

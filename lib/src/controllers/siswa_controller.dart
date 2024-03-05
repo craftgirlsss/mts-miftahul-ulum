@@ -62,17 +62,13 @@ class SiswaController extends GetxController {
             'x_api_key': 'ZjE1ZTEzOTQwNjhhMWQ2ZmQ0Njk4NzVkNmYwMDczMTk'
           }).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
+        print(jsonDecode(response.body));
         isLoadingDaftarKelas(false);
-        if (jsonDecode(response.body)['success'] == true) {
           daftarGuruAbsenModels.value =
               AbsensiGuruModels.fromJson(jsonDecode(response.body));
-        } else {
-          isLoadingDaftarKelas(false);
-          // return false;
-        }
       } else {
         Get.snackbar("Gagal",
-            "Gagl menghubungkan ke server karna kode ${response.statusCode}",
+            "Gagal menghubungkan ke server karna kode ${response.statusCode}",
             backgroundColor: Colors.red, colorText: Colors.white);
         isLoadingDaftarKelas(false);
         // return false;

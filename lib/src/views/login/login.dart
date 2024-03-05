@@ -52,6 +52,7 @@ class _ViewLoginState extends State<ViewLogin> {
       controller: emailController,
       keyboardType: TextInputType.number,
       autofocus: false,
+      cursorColor: Colors.black54,
       style: kDefaultTextStyle(color: Colors.black87, fontSize: 15),
       decoration: InputDecoration(
           prefixIcon: const Icon(CupertinoIcons.person, color: Colors.black54),
@@ -71,6 +72,7 @@ class _ViewLoginState extends State<ViewLogin> {
         controller: passController,
         autofocus: false,
         obscureText: obsecure.value,
+        cursorColor: Colors.black54,
         style: kDefaultTextStyle(color: Colors.black87, fontSize: 15),
         decoration: InputDecoration(
           prefixIcon: const Icon(CupertinoIcons.padlock, color: Colors.black54),
